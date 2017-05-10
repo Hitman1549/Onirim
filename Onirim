@@ -158,9 +158,15 @@ public class Onirim extends JFrame
 		 * 2 crossroad moons
 		 * 1 crossroad key
 		 */
-		if(crossroadExpansion)
+		if(crossroadExpansion) //TODO
 		{
-			
+			for(int i = 0; i < 10; i++)
+				limbo.add(new Card(deadEnd, "DeadEnd", "none"));
+			for(int i = 0; i < 3; i++)
+				limbo.add(new Card(xs, "sun", "all"));
+			limbo.add(new Card(xm, "sun", "all"));
+			limbo.add(new Card(xm, "sun", "all"));
+			limbo.add(new Card(xk, "sun", "all"));
 		}
 		
 		for(int i = 0; i < 10; i++) 
