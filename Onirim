@@ -63,10 +63,15 @@ public class Onirim extends JFrame
 	private int anchorX, anchorY;
 
 	private int drawMinX = 10, drawMaxX = drawMinX + cardWidth;
+
 	private int screenWidth,screenHeight;
 
+	private int trapMinX = screenHeight - 50, trapMaxX = screenHeight;
+			
 	private int drawMinY;
 	private int drawMaxY;
+	private int trapMinY;
+	private int trapMaxY;
 	private int numLocationsPlayed;
 	private int fudgeX = 8, fudgeY = 28;
 	private int maxInRow = 21;
@@ -231,6 +236,8 @@ public class Onirim extends JFrame
 		setSize(screenWidth ,screenHeight);
 		drawMaxY = screenHeight - 100;
 		drawMinY = screenHeight - cardHeight - 100;
+		trapMaxY = screenHeight - 100;
+		trapMinY = screenHeight - cardHeight - 100;
 		maxCardsInDiscardColumn = (screenHeight - cardHeight)/((cardHeight)/5);
 	
 		MyPanel pan = new MyPanel();
@@ -455,6 +462,11 @@ public class Onirim extends JFrame
 		return(x > drawMinX + fudgeX && x < drawMaxX + fudgeX
 				&& y > drawMinY + fudgeY && y < drawMaxY + fudgeY);	
 	}
+	public boolean clickedTrapDoor(int x, int y)
+	{
+		return(x > trapMinX + fudgeX && x < trapMaxX + fudgeX
+				&& y > trapMinY + fudgeY && y < trapMaxY + fudgeY);
+	}
 	
 	public void freeHand()
 	{
@@ -609,7 +621,7 @@ public class Onirim extends JFrame
 	
 	public boolean isDiscard(Card c)
 	{
-		return c.getY() <= drawMinY && c.getX() < drawMaxX - 5 && !(c.getType().contains("door"));
+		return c.getY() <= drawMinY && c.getX() < drawMaxX - 5 && !(c.getType().contains("door") && !(c.getType().contains("DeadEnd")));
 	}
 	
 	
@@ -1211,7 +1223,6 @@ public class Onirim extends JFrame
 						{
 							setProphecy(5, 1);  // Changed setProphecy
 						}
-
 					}
 					
 					else if(prophecyInPlay && (prophecyCards.size() == numProphecyCardsToDisplay))// || prophecyCards.size() == deck.size()))
