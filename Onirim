@@ -66,12 +66,12 @@ public class Onirim extends JFrame
 
 	private int screenWidth,screenHeight;
 
-	private int trapMinX = screenHeight - 50, trapMaxX = screenHeight;
-			
+	private int trapMinX = screenWidth - 125;
+	private int trapMaxX = screenWidth - 75;
 	private int drawMinY;
 	private int drawMaxY;
-	private int trapMinY;
-	private int trapMaxY;
+	private int trapMinY = screenHeight - 240;
+	private int trapMaxY = screenHeight - 190;
 	private int numLocationsPlayed;
 	private int fudgeX = 8, fudgeY = 28;
 	private int maxInRow = 21;
@@ -296,6 +296,8 @@ public class Onirim extends JFrame
 		}
 		else
 		{
+
+
 			for(int i = toDraw.size() - 1; i >= 0; i--)
 			{
 				Card temp = toDraw.get(i);
@@ -309,7 +311,11 @@ public class Onirim extends JFrame
 								cardWidth, cardHeight, this);
 				}
 			}
-			
+			if(crossroadExpansion)
+			{
+				g.setColor(Color.RED);
+				g.fillRect(trapMinX,  trapMinY, 100, 140);
+			}
 			g.drawImage(cardBack, 10, screenHeight - cardHeight -100, cardWidth, cardHeight, this);
 			g.setColor(Color.white);
 			g.drawString("DECK: " + deck.size() + "                                      HAND"
@@ -326,7 +332,9 @@ public class Onirim extends JFrame
 			g.drawLine(screenWidth - cardWidth - 2*fudgeX-10, 10 + cardHeight, screenWidth - cardWidth - 2*fudgeX-10,screenHeight);
 			g.drawLine(screenWidth - 2*fudgeX-10, 0, screenWidth  - 2*fudgeX-10,screenHeight);
 		
-			g.drawLine(drawMaxX, 10 + cardHeight, screenWidth, 10 + cardHeight); 
+			
+			
+			g.drawLine(drawMaxX, 10 + cardHeight, screenWidth, 10 + cardHeight);
 			if(gameOver)
 			{
 				g.setFont(endFont);
@@ -463,9 +471,9 @@ public class Onirim extends JFrame
 				&& y > drawMinY + fudgeY && y < drawMaxY + fudgeY);	
 	}
 	public boolean clickedTrapDoor(int x, int y)
-	{
-		return(x > trapMinX + fudgeX && x < trapMaxX + fudgeX
-				&& y > trapMinY + fudgeY && y < trapMaxY + fudgeY);
+	{	
+		System.out.print("yes");
+		return(x > trapMinX && x < trapMaxX && y > trapMinY && y < trapMaxY);
 	}
 	
 	public void freeHand()
@@ -1159,7 +1167,10 @@ public class Onirim extends JFrame
 					adjustProphecy();
 					drawCard();
 				}
-			
+				else if(clickedTrapDoor(mickey.getX(), mickey.getY()))
+				{
+					discardAndFillHand();
+				}
 				else if(hand.size() != 5 && // draw card for fill hand.  
 							clickedDeck(mickey.getX(), mickey.getY()))
 				{
@@ -1332,3 +1343,4 @@ public class Onirim extends JFrame
 	}
 	
 }
+
