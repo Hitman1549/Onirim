@@ -166,7 +166,7 @@ public class Onirim extends JFrame
 		if(crossroadExpansion) //TODO
 		{
 			for(int i = 0; i < 10; i++)
-				limbo.add(new Card(deadEnd, "DeadEnd", "none"));
+				limbo.add(new Card(deadEnd, "DeadEnd", "DeadEnd"));
 			for(int i = 0; i < 3; i++)
 				limbo.add(new Card(xs, "sun", "all"));
 			limbo.add(new Card(xm, "sun", "all"));
@@ -614,9 +614,9 @@ public class Onirim extends JFrame
 		}
 	}
 	
-	public boolean isValidLocationPlay(Card c)
+	public boolean isValidLocationPlay(Card c) //TODO
 	{
-		if(c.getType().contains("door") || c.getType().contains("dream")) 
+		if(c.getType().contains("door") || c.getType().contains("dream") || c.getType().contains("DeadEnd")) 
 			return false;
 		String type = "";
 		if(numLocationsPlayed != 0)
@@ -651,7 +651,7 @@ public class Onirim extends JFrame
 		if(playedLocations.size() >= indexOfLastSet + 3)
 		{
 			String col = playedLocations.get(playedLocations.size()-1).getColor();
-			if(col.equals(playedLocations.get(playedLocations.size() -2).getColor()) &&
+			if( ( col.equals(playedLocations.get(playedLocations.size() -2).getColor()) ||  )&&
 					col.equals(playedLocations.get(playedLocations.size() -3).getColor()))
 			{
 				lockLastLocationPlay();
