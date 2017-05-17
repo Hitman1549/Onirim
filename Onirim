@@ -166,12 +166,12 @@ public class Onirim extends JFrame
 		if(crossroadExpansion) //TODO
 		{
 			for(int i = 0; i < 10; i++)
-				limbo.add(new Card(deadEnd, "DeadEnd", "DeadEnd"));
+				limbo.add(new Card(deadEnd, "LocationDeadEnd", "DeadEnd"));
 			for(int i = 0; i < 3; i++)
-				limbo.add(new Card(xs, "sun", "all"));
-			limbo.add(new Card(xm, "sun", "all"));
-			limbo.add(new Card(xm, "sun", "all"));
-			limbo.add(new Card(xk, "sun", "all"));
+				limbo.add(new Card(xs, "locationSun", "all"));
+			for(int i = 0; i < 2; i++)
+			limbo.add(new Card(xm, "locationMoon", "all"));
+			limbo.add(new Card(xk, "locationKey", "all"));
 		}
 		
 		for(int i = 0; i < 10; i++) 
@@ -534,6 +534,7 @@ public class Onirim extends JFrame
 			temp.setX(drawMaxX + cardWidth*(hand.size()-1));
 			temp.setY(drawMinY);
 			temp.setVisible(true);
+			System.out.print("Drawn");
 		}
 		// if you draw a door, you can discard the same colored key in order to play the door
 		else if(temp.getType().contains("door"))
@@ -594,7 +595,7 @@ public class Onirim extends JFrame
 //		return false;
 //	}
 	
-	public void searchDeckForDoor(Card c)
+	public void searchDeckForDoor(Card c)//TODO figure out what this does and how to make the rainbow cards not suck
 	{
 		for(int j = 0; j < deck.size(); j++)
 		{
@@ -651,11 +652,15 @@ public class Onirim extends JFrame
 		if(playedLocations.size() >= indexOfLastSet + 3)
 		{
 			String col = playedLocations.get(playedLocations.size()-1).getColor();
-			if( ( col.equals(playedLocations.get(playedLocations.size() -2).getColor()) ||  )&&
-					col.equals(playedLocations.get(playedLocations.size() -3).getColor()))
+			String Ran = "all";
+			if( ( col.equals(playedLocations.get(playedLocations.size() -2).getColor()) ||  Ran.equals(playedLocations.get(playedLocations.size() -2).getColor()))
+					&& ( col.equals(playedLocations.get(playedLocations.size() -3).getColor()) ||  Ran.equals(playedLocations.get(playedLocations.size() -3).getColor())) )
 			{
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
+				if(Ran.equals(playedLocations.get(playedLocations.size()-1)))
+					searchDeckForDoor(playedLocations.get(playedLocations.size()-2));
+				else
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
 			}
 		}
