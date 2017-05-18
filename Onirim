@@ -165,12 +165,12 @@ public class Onirim extends JFrame
 		 */
 		if(crossroadExpansion) //TODO
 		{
-			for(int i = 0; i < 10; i++)
-				limbo.add(new Card(deadEnd, "LocationDeadEnd", "DeadEnd"));
+			for(int i = 0; i < 30; i++)
+				limbo.add(new Card(deadEnd, "locationDeadEnd", "DeadEnd"));
 			for(int i = 0; i < 3; i++)
 				limbo.add(new Card(xs, "locationSun", "all"));
 			for(int i = 0; i < 2; i++)
-			limbo.add(new Card(xm, "locationMoon", "all"));
+				limbo.add(new Card(xm, "locationMoon", "all"));
 			limbo.add(new Card(xk, "locationKey", "all"));
 		}
 		
@@ -472,7 +472,6 @@ public class Onirim extends JFrame
 	}
 	public boolean clickedTrapDoor(int x, int y)
 	{	
-		System.out.print("yes");
 		return(x > trapMinX && x < trapMaxX && y > trapMinY && y < trapMaxY);
 	}
 	
@@ -652,16 +651,23 @@ public class Onirim extends JFrame
 		if(playedLocations.size() >= indexOfLastSet + 3)
 		{
 			String col = playedLocations.get(playedLocations.size()-1).getColor();
+			String col1 = playedLocations.get(playedLocations.size() -2).getColor();
+			String col2 = playedLocations.get(playedLocations.size() -3).getColor();
 			String Ran = "all";
-			if( ( col.equals(playedLocations.get(playedLocations.size() -2).getColor()) ||  Ran.equals(playedLocations.get(playedLocations.size() -2).getColor()))
-					&& ( col.equals(playedLocations.get(playedLocations.size() -3).getColor()) ||  Ran.equals(playedLocations.get(playedLocations.size() -3).getColor())) )
+			if( ( col.equals(col1) ||  Ran.equals(col1) ) && ( col.equals(col2) ||  Ran.equals(col2) ) );
 			{
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
-				if(Ran.equals(playedLocations.get(playedLocations.size()-1)))
+				if(Ran.equals(col))
+				{
+					System.out.print("Line 663");
 					searchDeckForDoor(playedLocations.get(playedLocations.size()-2));
+				}
 				else
+				{
+					System.out.print("Line 668");
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
+				}
 			}
 		}
 		
@@ -1174,6 +1180,7 @@ public class Onirim extends JFrame
 				}
 				else if(clickedTrapDoor(mickey.getX(), mickey.getY()))
 				{
+					System.out.print("clicked trap door");
 					discardAndFillHand();
 				}
 				else if(hand.size() != 5 && // draw card for fill hand.  
