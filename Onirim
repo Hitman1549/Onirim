@@ -66,12 +66,14 @@ public class Onirim extends JFrame
 
 	private int screenWidth,screenHeight;
 	//TODO
-	public int trapMinX = screenWidth - 125;
-	public int trapMaxX = screenWidth - 75;
+
 	private int drawMinY;
 	private int drawMaxY;
+	public int trapMinX = screenWidth - 125;
 	public int trapMinY = screenHeight - 240;
-	public int trapMaxY = screenHeight - 190;
+	public int trapMaxY = trapMinY + cardHeight;	
+	public int trapMaxX = trapMinX + cardWidth;
+	
 	private int numLocationsPlayed;
 	private int fudgeX = 8, fudgeY = 28;
 	private int maxInRow = 21;
@@ -313,10 +315,8 @@ public class Onirim extends JFrame
 			}
 			if(crossroadExpansion)//TODO
 			{
-				trapMinX = screenWidth - 125;
-				trapMinY = screenHeight - 240;
 				g.setColor(Color.RED);
-				g.fillRect(trapMinX,  trapMinY, 100, 140);
+				g.fillRect(trapMinX,  trapMinY, trapMaxX - trapMinX, trapMaxY - trapMinY);
 			}
 			g.drawImage(cardBack, 10, screenHeight - cardHeight -100, cardWidth, cardHeight, this);
 			g.setColor(Color.white);
@@ -1357,7 +1357,4 @@ public class Onirim extends JFrame
 	}
 	
 }
-
-}
-
 
