@@ -315,6 +315,10 @@ public class Onirim extends JFrame
 			}
 			if(crossroadExpansion)//TODO
 			{
+				trapMinX = screenWidth - 125;
+				trapMinY = screenHeight - 240;
+				trapMaxY = trapMinY + cardHeight;	
+				trapMaxX = trapMinX + cardWidth;
 				g.setColor(Color.RED);
 				g.fillRect(trapMinX,  trapMinY, trapMaxX - trapMinX, trapMaxY - trapMinY);
 			}
@@ -474,6 +478,10 @@ public class Onirim extends JFrame
 	}
 	public boolean clickedTrapDoor(int x, int y)
 	{	
+		trapMinX = screenWidth - 125;
+		trapMinY = screenHeight - 240;
+		trapMaxY = trapMinY + cardHeight;	
+		trapMaxX = trapMinX + cardWidth;
 		return(x > trapMinX && x < trapMaxX && y > trapMinY && y < trapMaxY);
 	}
 	
@@ -866,7 +874,7 @@ public class Onirim extends JFrame
 			}
 		}
 	}
-	public void sendToDiscard(Card c)
+	public void sendToDiscard(Card c) //TODO
 	{
 		discard.add(c);
 		if(prophecyCards.contains(c))
@@ -1357,4 +1365,3 @@ public class Onirim extends JFrame
 	}
 	
 }
-
