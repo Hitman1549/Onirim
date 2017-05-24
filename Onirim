@@ -663,21 +663,30 @@ public class Onirim extends JFrame
 			String col = playedLocations.get(playedLocations.size()-1).getColor();
 			String col1 = playedLocations.get(playedLocations.size() -2).getColor();
 			String col2 = playedLocations.get(playedLocations.size() -3).getColor();
+			System.out.println(col);
+			System.out.println(col1);
+			System.out.println(col2);
 			String Ran = "all";
-			if( ( col.equals(col1) ||  Ran.equals(col1) ) && ( col.equals(col2) ||  Ran.equals(col2) ) );
+			if( ( col.equals(col1) ||  col.equals("all") ) && col1.equals(col2) );
 			{
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
-				if(Ran.equals(col))
-				{
-					System.out.print("Line 663");
-					searchDeckForDoor(playedLocations.get(playedLocations.size()-2));
-				}
-				else
-				{
-					System.out.print("Line 668");
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
-				}
+				
+			}
+			if( col.equals(col1) && ( col1.equals(col2) ||  col1.equals("all") ))
+			{
+				lockLastLocationPlay();
+				indexOfLastSet = playedLocations.size() /*-1*/;
+				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
+				
+			}
+			if( col1.equals(col2) && ( col1.equals(col2) ||  col2.equals("all") ))
+			{
+				lockLastLocationPlay();
+				indexOfLastSet = playedLocations.size() /*-1*/;
+				searchDeckForDoor(playedLocations.get(playedLocations.size()-2));
+				
 			}
 		}
 		
@@ -696,6 +705,7 @@ public class Onirim extends JFrame
 	
 	public void adjustHand()
 	{
+		
 		for(int k = 0; k < hand.size(); k++) // move cards in hand
 		{
 			hand.get(k).setX(drawMaxX + cardWidth*(k));
@@ -986,7 +996,7 @@ public class Onirim extends JFrame
 		{
 			if(i == limbo.size())
 				break;  // dead end cards do not get discarded this way
-			while(limbo.get(i).getType().contains("location") && !limbo.get(i).getType().contains("DeadEnd"))
+			while(limbo.get(i).getType().contains("location"))
 			{
 				sendToDiscard(limbo.remove(i));
 				if(i == limbo.size())
@@ -1188,11 +1198,40 @@ public class Onirim extends JFrame
 					adjustProphecy();
 					drawCard();
 				}
-				else if(clickedTrapDoor(mickey.getX(), mickey.getY()))
+				else if(clickedTrapDoor(mickey.getX(), mickey.getY())) // TODO
 				{
 					System.out.print("clicked trap door");
-					discardAndFillHand();
+					discardHand();
+					while(hand.size() < 5 && deck.size() > 5)
+					{
+						Card temp = deck.get(0);
+						if(temp.getType().contains("location"))
+						{
+							hand.add(deck.remove(0));
+							temp.setX(drawMaxX + cardWidth*(hand.size()-1));
+							temp.setY(drawMinY);
+							temp.setVisible(true);
+						}
+						else// if(temp.getType().contains("door") || temp.getType().contains("dream"))
+						{
+							limbo.add(deck.remove(0));
+							temp.setX(drawMaxX + cardWidth*(limbo.size()-1) + 6*cardWidth);
+							temp.setY(drawMinY);
+							temp.setVisible(true);
+						}
+					}
+					if(hand.size()==5)
+					{
+						for(Card c : hand)
+						{
+							c.setMovable(true);
+						}
+						shuffleLimbo();
+					}
 				}
+				
+				
+				
 				else if(hand.size() != 5 && // draw card for fill hand.  
 							clickedDeck(mickey.getX(), mickey.getY()))
 				{
@@ -1249,7 +1288,7 @@ public class Onirim extends JFrame
 						setPlayedLocationCoordinates(c);
 					}
 					//DISCARD
-					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c))
+					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c)  && c.getType() != "locationDeadEnd")
 					{
 						sendToDiscard(c);
 						if(c.getType().contains("Key") )
@@ -1266,6 +1305,7 @@ public class Onirim extends JFrame
 							prophecyInPlay = false; //frees the deck
 							lockProphecyAndSetProphecyOrder();
 							adjustProphecy();
+							adjustHand();//TODO
 							numProphecyCardsToDiscard = 0; 
 							numProphecyCardsToDisplay = 0;
 						}
@@ -1365,3 +1405,4 @@ public class Onirim extends JFrame
 	}
 	
 }
+
