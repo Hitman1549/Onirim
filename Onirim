@@ -373,7 +373,22 @@ public class Onirim extends JFrame
 	{
 		Onirim obj = new Onirim();
 	}
-	
+	public boolean Rainbow()
+	{
+		System.out.println("Rainbow");
+		if(playedLocations.get(playedLocations.size()-1).getColor().equals("all"))
+		{
+			return false;
+		}
+		if(playedLocations.size() > 1)
+		{
+			if(playedLocations.get(playedLocations.size()-1).getColor().equals("all") || playedLocations.get(playedLocations.size()-2).getColor().equals("all"))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 	public void moveCard(int x, int y)
 	{
 		for(int i = 0; i < toDraw.size(); i++)
@@ -382,11 +397,11 @@ public class Onirim extends JFrame
 			if(x >= c.getX() && x <= c.getX() + cardWidth &&
 					y >= c.getY() && y <= c.getY() + cardHeight)
 			{
-				if(c.getMovable())
+				if(c.getMovable())//TODO
 				{
-				
+					
 					if(!playedLocations.isEmpty() && c.equals(playedLocations.get(playedLocations.size()-1)))
-						hasBeenPlayed = true;
+							 hasBeenPlayed = true;
 				
 					c.setSelected(true);
 					anchorY = y;
@@ -543,7 +558,6 @@ public class Onirim extends JFrame
 			temp.setX(drawMaxX + cardWidth*(hand.size()-1));
 			temp.setY(drawMinY);
 			temp.setVisible(true);
-			System.out.print("Drawn");
 		}
 		// if you draw a door, you can discard the same colored key in order to play the door
 		else if(temp.getType().contains("door"))
@@ -626,7 +640,11 @@ public class Onirim extends JFrame
 	
 	public boolean isValidLocationPlay(Card c) //TODO
 	{
+		System.out.println("Is it valid?");
 		if(c.getType().contains("door") || c.getType().contains("dream") || c.getType().contains("DeadEnd")) 
+			return false;
+		else
+		if(playedLocations.size() > 0 && !Rainbow())//TODO
 			return false;
 		String type = "";
 		if(numLocationsPlayed != 0)
@@ -1405,4 +1423,3 @@ public class Onirim extends JFrame
 	}
 	
 }
-
