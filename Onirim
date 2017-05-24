@@ -167,7 +167,7 @@ public class Onirim extends JFrame
 		 */
 		if(crossroadExpansion) //TODO
 		{
-			for(int i = 0; i < 30; i++)
+			for(int i = 0; i < 10; i++)
 				limbo.add(new Card(deadEnd, "locationDeadEnd", "DeadEnd"));
 			for(int i = 0; i < 3; i++)
 				limbo.add(new Card(xs, "locationSun", "all"));
@@ -373,22 +373,7 @@ public class Onirim extends JFrame
 	{
 		Onirim obj = new Onirim();
 	}
-	public boolean Rainbow()
-	{
-		System.out.println("Rainbow");
-		if(playedLocations.get(playedLocations.size()-1).getColor().equals("all"))
-		{
-			return false;
-		}
-		if(playedLocations.size() > 1)
-		{
-			if(playedLocations.get(playedLocations.size()-1).getColor().equals("all") || playedLocations.get(playedLocations.size()-2).getColor().equals("all"))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+
 	public void moveCard(int x, int y)
 	{
 		for(int i = 0; i < toDraw.size(); i++)
@@ -640,18 +625,22 @@ public class Onirim extends JFrame
 	
 	public boolean isValidLocationPlay(Card c) //TODO
 	{
-		System.out.println("Is it valid?");
 		if(c.getType().contains("door") || c.getType().contains("dream") || c.getType().contains("DeadEnd")) 
 			return false;
-		else
-		if(playedLocations.size() > 0 && !Rainbow())//TODO
-			return false;
+		
+		if(playedLocations.size() == 0)//TODO
+			return true;
+
 		String type = "";
 		if(numLocationsPlayed != 0)
 			type = playedLocations.get(playedLocations.size()-1).getType();
-		boolean toRet = ((c.getY() >= drawMinY || c.getX() <= drawMaxX) 
-				|| (numLocationsPlayed != 0 
-				&& (c.getType().contains(type) || type.contains(c.getType()))));
+		
+		System.out.println("drawMinY = " + drawMinY + "drawMaxX = " + drawMaxX);
+		
+		boolean toRet = ((c.getY() >= drawMinY || c.getX() <= drawMaxX) || (numLocationsPlayed != 0) 
+						&& (c.getType().contains(type) || type.contains(c.getType())));
+		
+		System.out.println("toRet = " + toRet + ", thus isCalidLocationPlay(Card c) = " + !toRet);
 		return !toRet;
 	}
 	
@@ -669,8 +658,9 @@ public class Onirim extends JFrame
 	// postcondition.  if we complete a set, we look for a door and update the indexOfLastSet
 	
 	//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-	public void playLocation(Card c)
+	public void playLocation(Card c)//TODO
 	{
+		
 		numLocationsPlayed++; 
 		hand.remove(c);
 		playedLocations.add(c);
@@ -678,33 +668,40 @@ public class Onirim extends JFrame
 		// was completed
 		if(playedLocations.size() >= indexOfLastSet + 3)
 		{
-			String col = playedLocations.get(playedLocations.size()-1).getColor();
+			String col = playedLocations.get(playedLocations.size() -1).getColor();
 			String col1 = playedLocations.get(playedLocations.size() -2).getColor();
 			String col2 = playedLocations.get(playedLocations.size() -3).getColor();
 			System.out.println(col);
 			System.out.println(col1);
 			System.out.println(col2);
 			String Ran = "all";
-			if( ( col.equals(col1) ||  col.equals("all") ) && col1.equals(col2) );
+			//Traditonal set of three cards of the same color
+			if(col.equals(col1) && col1.equals(col2));
 			{
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
-				
 			}
-			if( col.equals(col1) && ( col1.equals(col2) ||  col1.equals("all") ))
-			{
-				lockLastLocationPlay();
-				indexOfLastSet = playedLocations.size() /*-1*/;
-				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
-				
-			}
-			if( col1.equals(col2) && ( col1.equals(col2) ||  col2.equals("all") ))
+			// the first card is a Crossroad
+			if(!col.equals("all") && col.equals(col1) && col2.equals("all"))
 			{
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-2));
-				
+			}
+			//the second card is a Crossroad
+			if(!col.equals("all") && col.equals(col2) && col1.equals("all"))
+			{
+				lockLastLocationPlay();
+				indexOfLastSet = playedLocations.size() /*-1*/;
+				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
+			}
+			//the third card is a Crossroad
+			if(!col1.equals("all") && col1.equals(col2) && col.equals("all"))
+			{
+				lockLastLocationPlay();
+				indexOfLastSet = playedLocations.size() /*-1*/;
+				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
 			}
 		}
 		
@@ -1296,7 +1293,8 @@ public class Onirim extends JFrame
 				if(c.getSelected())
 				{
 					c.setSelected(false);
-					
+					System.out.println("!hasBeenPlayed = " + !hasBeenPlayed);
+					System.out.println("Also, isValidLocationPlay(c) = " + isValidLocationPlay(c));
 					// didn't drop into play area so snap back to original position 
 					//PLAY LOCATION
 					if(!hasBeenPlayed && isValidLocationPlay(c) && !prophecyCards.contains(c))
