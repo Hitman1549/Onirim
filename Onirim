@@ -169,12 +169,13 @@ public class Onirim extends JFrame
 		if(crossroadExpansion) //TODO
 		{
 			for(int i = 0; i < 10; i++)
-				limbo.add(new Card(deadEnd, "locationDeadEnd", "DeadEnd"));
+				limbo.add(new Card(deadEnd, "DeadEnd", "DeadEnd"));
 			for(int i = 0; i < 3; i++)
 				limbo.add(new Card(xs, "locationSun", "all"));
 			for(int i = 0; i < 2; i++)
 				limbo.add(new Card(xm, "locationMoon", "all"));
-			limbo.add(new Card(xk, "locationKey", "all"));
+			for(int i = 0; i < 1; i++)
+				limbo.add(new Card(xk, "locationKey", "all"));
 		}
 		
 		for(int i = 0; i < 10; i++) 
@@ -362,7 +363,7 @@ public class Onirim extends JFrame
 				g.setColor(highlight);
 				for(Card c : hand)
 				{
-					if(c.getType().contains("Key") && c.getColor().contains(doorFromKey.getColor()))
+					if(c.getType().contains("Key") && (c.getColor().contains(doorFromKey.getColor()) || c.getColor().equals("all") == true))
 						g.fillRect(c.getX(), c.getY(), cardWidth, cardHeight);
 				}
 				g.setColor(Color.WHITE);
@@ -400,7 +401,7 @@ public class Onirim extends JFrame
 		}
 	}
 	
-	//Not currently in uses, for makin gsure that the door is valid for steps lost and found
+	//Not currently in uses, for making sure that the door is valid for steps lost and found
 	public int getIndexOfCard(ArrayList<Card> list, Card c)
 	{
 		for(int i = 0; i < list.size(); i++)
@@ -537,7 +538,7 @@ public class Onirim extends JFrame
 		{
 			lockLastLocationPlay();
 		}
-		if(temp.getType().contains("location"))
+		if(temp.getType().contains("location") || temp.getType().contains("DeadEnd"))
 		{
 			hand.add(deck.remove(0));
 			temp.setX(drawMaxX + cardWidth*(hand.size()-1));
@@ -574,6 +575,10 @@ public class Onirim extends JFrame
 				temp.setVisible(true);
 			}
 		}
+		else if(temp.getType().contains("DeadEnd"))//TODO
+		{
+			
+		}
 		if(hand.size() == 5)
 			freeHand();
 		if(prophecyCards.contains(temp))
@@ -587,7 +592,7 @@ public class Onirim extends JFrame
 	{
 		for(Card c : hand)
 		{
-			if(c.getType().contains("Key") && c.getColor().contains(door.getColor())) //fine
+			if(c.getType().contains("Key") && (c.getColor().contains(door.getColor()) || c.getColor().equals("all") == true)) //fine
 				return true;
 		}
 		return false;
@@ -612,7 +617,7 @@ public class Onirim extends JFrame
 					c.getColor().contains(deck.get(j).getColor())) // not fine
 			{
 				//play the card to limbo for now
-				Card door = deck.remove(j);
+				Card door = deck.get(j);
 				limbo.add(door);
 				door.setX(drawMaxX + cardWidth*(limbo.size()-1) + 6*cardWidth);
 				door.setY(drawMinY);
@@ -684,6 +689,7 @@ public class Onirim extends JFrame
 		{
 			if(!col.equals(col2) && col.equals(col1) && col2.equals("all"))
 			{
+				System.out.println("Card Card Crossroad");
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
@@ -693,6 +699,7 @@ public class Onirim extends JFrame
 			// Card Crossroad Card
 			if(!col.equals(col1) && col.equals(col2) && col1.equals("all"))
 			{
+				System.out.println("Card Crossroad Card");
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
@@ -702,6 +709,7 @@ public class Onirim extends JFrame
 			// Crossroad Card Card
 			if(!col1.equals(col) && col1.equals(col2) && col.equals("all"))
 			{
+				System.out.println("Crossroad Card Card");
 				lockLastLocationPlay();
 				indexOfLastSet = playedLocations.size() /*-1*/;
 				searchDeckForDoor(playedLocations.get(playedLocations.size()-3));
@@ -710,13 +718,16 @@ public class Onirim extends JFrame
 			System.out.println("        FAIL 3");
 		}
 		//Card Card Card
-		if(col.equals(col1) && col1.equals(col2));
-		{
-			lockLastLocationPlay();
-			indexOfLastSet = playedLocations.size() /*-1*/;
-			searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
-		}
-		
+		if(col.equals(col1) == true);
+			if(col.equals(col2) == true)
+			{
+				System.out.println("col.equals(col1) = " + col.equals(col1));
+				System.out.println("col.equals(col2) = " + col.equals(col2));
+				System.out.println("Card Card Card");
+				lockLastLocationPlay();
+				indexOfLastSet = playedLocations.size() /*-1*/;
+				searchDeckForDoor(playedLocations.get(playedLocations.size()-1));
+			}
 		}
 	}
 	
@@ -810,7 +821,7 @@ public class Onirim extends JFrame
 				if(x > c.getX() + fudgeX && x < c.getX() + cardWidth + fudgeX
 						&& y > c.getY() + fudgeY && y < c.getY() + cardHeight + fudgeY)
 				{
-					if(c.getType().contains("Key") && c.getColor().contains(d.getColor())) //fine
+					if(c.getType().contains("Key") && (c.getColor().contains(d.getColor()) || c.getColor().equals("all") == true) ) //fine
 						return c;
 				}
 			}
@@ -986,7 +997,7 @@ public class Onirim extends JFrame
 	
 	// currently, this happens, but gets skipped, as there is no pause.  
 	// the game could end, in which case you MAY see this happen
-	public void drawFiveNightmarePlay()
+	public void drawFiveNightmarePlay()//TODO
 	{
 		discardNightmare();
 		//send five cards to limbo for the user to see
@@ -1012,10 +1023,13 @@ public class Onirim extends JFrame
 	public void discardNightmare()
 	{
 		// send the last card played to limbo(must be a nightmare) to discard
-		Card n = limbo.remove(limbo.size()-1);
-		toDraw.remove(n);
-		toDraw.add(0,n);
-		sendToDiscard(n);
+		if((limbo.size() - 1) > -1)
+		{
+			Card n = limbo.remove(limbo.size()-1);
+			toDraw.remove(n);
+			toDraw.add(0,n);
+			sendToDiscard(n);
+		}
 	}
 	
 	public void sendLocationsToDiscardFromLimbo()
@@ -1108,8 +1122,7 @@ public class Onirim extends JFrame
 		}
 	}
 	
-	
-	public boolean clickedNightmare(int x, int y) 
+	public boolean clickedNightmare(int x, int y)
 	{												
 		if(limbo.isEmpty())
 			return false;
@@ -1194,7 +1207,7 @@ public class Onirim extends JFrame
 					drawHand(mickey.getX(), mickey.getY());
 				else if(nightMareInPlay) // && canPlayNightmare
 				{
-					if(clickedDeck(mickey.getX(), mickey.getY()))
+					if(clickedDeck(mickey.getX(), mickey.getY()))//TODO
 					{
 						drawFiveNightmarePlay();
 						nightMareInPlay = false;
@@ -1229,25 +1242,15 @@ public class Onirim extends JFrame
 				}
 				else if(clickedTrapDoor(mickey.getX(), mickey.getY())) // TODO
 				{
-					System.out.print("clicked trap door");
-					discardHand();
-					while(hand.size() < 5 && deck.size() > 5)
+					if(deck.size() < 5)
 					{
-						Card temp = deck.get(0);
-						if(temp.getType().contains("location"))
-						{
-							hand.add(deck.remove(0));
-							temp.setX(drawMaxX + cardWidth*(hand.size()-1));
-							temp.setY(drawMinY);
-							temp.setVisible(true);
-						}
-						else// if(temp.getType().contains("door") || temp.getType().contains("dream"))
-						{
-							limbo.add(deck.remove(0));
-							temp.setX(drawMaxX + cardWidth*(limbo.size()-1) + 6*cardWidth);
-							temp.setY(drawMinY);
-							temp.setVisible(true);
-						}
+						gameOver = true;
+					}
+					else
+					if(!gameOver)
+					{
+						discardHand();
+						fillHand();
 					}
 					if(hand.size()==5)
 					{
@@ -1309,7 +1312,7 @@ public class Onirim extends JFrame
 					System.out.println("!hasBeenPlayed = " + !hasBeenPlayed);
 					System.out.println("isDiscard(c) = " + isDiscard(c));
 					System.out.println("!prophecyCards.contains(c) = "  + !prophecyCards.contains(c));
-					System.out.println("c.getType() != locationDeadEnd = " + (c.getType() != "locationDeadEnd"));
+					System.out.println("c.getType() != DeadEnd = " + (c.getType() != "DeadEnd"));
 					c.setSelected(false);
 					
 					// didn't drop into play area so snap back to original position 
@@ -1321,7 +1324,7 @@ public class Onirim extends JFrame
 						setPlayedLocationCoordinates(c);
 					}
 					//DISCARD
-					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c)  && c.getType() != "locationDeadEnd")//TODO
+					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c)  && c.getType() != "DeadEnd")//TODO
 					{
 						System.out.println("Discard");
 						sendToDiscard(c);
