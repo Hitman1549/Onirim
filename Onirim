@@ -47,10 +47,10 @@ public class Onirim extends JFrame
 	private Image xk = ResourceLoader.getImage("CrossroadKey.png");
 	private Image deadEnd = ResourceLoader.getImage("DeadEnd.png");
 	
-//	private Image rg = ResourceLoader.getImage("RedGlyph.png");
-//	private Image bg = ResourceLoader.getImage("BlueGlyph.png");
-//	private Image gg = ResourceLoader.getImage("GreenGlyph.png");
-//	private Image tg = ResourceLoader.getImage("TanGlyph.png");
+	private Image rg = ResourceLoader.getImage("RedGlyph.png");
+	private Image bg = ResourceLoader.getImage("BlueGlyph.png");
+	private Image gg = ResourceLoader.getImage("GreenGlyph.png");
+	private Image tg = ResourceLoader.getImage("TanGlyph.png");
 //	private Image spellCard = ResourceLoader.getImage("SpellCard.png");
 	
 //	private Image r3 = ResourceLoader.getImage("RedTowerThree.png");
@@ -122,6 +122,7 @@ public class Onirim extends JFrame
 	public Random randy = new Random(); 
 
 	private boolean crossroadExpansion = false;
+	private boolean Glyphs = false;
 //	private boolean glyphsExpansion = false;
 //	private boolean bookOfStepsLostAndFoundExpansion = false;
 //	private boolean towersExpansion = false;
@@ -159,6 +160,32 @@ public class Onirim extends JFrame
 		limbo.add(new Card(td, "door", "tan"));
 		limbo.add(new Card(td, "door", "tan"));
 		
+		if(Glyphs)
+		{
+			limbo.add(new Card(rd, "door", "red"));
+			limbo.add(new Card(rd, "door", "red"));
+					
+			limbo.add(new Card(bd, "door", "blue"));
+			limbo.add(new Card(bd, "door", "blue"));
+					
+			limbo.add(new Card(gd, "door", "green"));
+			limbo.add(new Card(gd, "door", "green"));
+					
+			limbo.add(new Card(td, "door", "tan"));
+			limbo.add(new Card(td, "door", "tan"));
+			//***********************************************************************************
+			limbo.add(new Card(rg, "door", "red"));
+			limbo.add(new Card(rg, "door", "red"));
+					
+			limbo.add(new Card(bg, "door", "blue"));
+			limbo.add(new Card(bg, "door", "blue"));
+					
+			limbo.add(new Card(gd, "door", "green"));
+			limbo.add(new Card(gd, "door", "green"));
+					
+			limbo.add(new Card(td, "door", "tan"));
+			limbo.add(new Card(td, "door", "tan"));
+		}
 		// if playing with the crossroads expansion
 		/*
 		 * put in 10 deadends
@@ -285,7 +312,19 @@ public class Onirim extends JFrame
 			g.drawImage(xm, 50 + 40 + cardWidth, yStart + 1*yChange, cardWidth, cardHeight, this);
 			g.drawImage(xk, 50 + 70 + cardWidth, yStart + 1*yChange, cardWidth, cardHeight, this);
 			
+			g.fillRect(20, yStart + 3*cardHeight/2 /*+ yChange*/, 20, 20);
+			g.drawString("Glyphs" , 500, yStart + 3*cardHeight/2 /*+ yChange*/ + 5);
+			g.drawImage(tg, 50     , yStart + 2*yChange, cardWidth, cardHeight, this);
+			g.drawImage(bg, 50 + 30, yStart + 2*yChange, cardWidth, cardHeight, this);
+			g.drawImage(gg, 50 + 60, yStart + 2*yChange, cardWidth, cardHeight, this);
+			g.drawImage(rg, 50 + 90, yStart + 2*yChange, cardWidth, cardHeight, this);
+			
 			g.setColor(Color.yellow);
+			
+			if(Glyphs)
+			{
+				g.fillRect(20, yStart + 4*cardHeight/2 /*+ yChange*/, 20, 20);
+			}
 			
 			if(crossroadExpansion)
 			{
@@ -316,6 +355,15 @@ public class Onirim extends JFrame
 				}
 			}
 			if(crossroadExpansion)//TODO
+			{
+				trapMinX = screenWidth - 125;
+				trapMinY = screenHeight - 240;
+				trapMaxY = trapMinY + cardHeight;	
+				trapMaxX = trapMinX + cardWidth;
+				g.setColor(Color.RED);
+				g.fillRect(trapMinX,  trapMinY, trapMaxX - trapMinX, trapMaxY - trapMinY);
+			}
+			if(Glyphs)//TODO AHHHHHHHHHHHHHH
 			{
 				trapMinX = screenWidth - 125;
 				trapMinY = screenHeight - 240;
