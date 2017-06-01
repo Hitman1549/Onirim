@@ -87,6 +87,7 @@ public class Onirim extends JFrame
 	private ArrayList<Card> playedLocations = new ArrayList<Card>();
 	private ArrayList<Card> playedDoors = new ArrayList<Card>();
 	private ArrayList<Card> prophecyCards = new ArrayList<Card>();
+	private ArrayList<Card> TranslationCards = new ArrayList<Card>();
 //	private ArrayList<Card> incantationCards = new ArrayList<Card>();
 //	private ArrayList<Card> blurredDoors = new ArrayList<Card>();
 //	private ArrayList<Card> highlightedDiscards = new ArrayList<Card>();
@@ -101,7 +102,7 @@ public class Onirim extends JFrame
 	
 	private Card doorFromSet, doorFromKey;
 	
-	private boolean firstDraw = true, prophecyInPlay, movedProphecyCard; 
+	private boolean firstDraw = true, prophecyInPlay, movedProphecyCard, TranslationInPlay; 
 //	private boolean incantationInPlay, movedIncantationCard;
 //	private boolean paradoxicalProphecyInPlay, movedParadoxicalProphecyCard;
 	private boolean fillingHandSoIgnoreNightmares;
@@ -132,7 +133,7 @@ public class Onirim extends JFrame
 //	private boolean activatedSpellOne, activatedSpellTwo, activatedSpellThree, completeSpellTwo;
 	
 //	private boolean canPlayTowerLeft, canPlayTowerRight, towersComplete, mustDiscardTower;
-	private int numProphecyCardsToDiscard, numProphecyCardsToDisplay;
+	private int numProphecyCardsToDiscard, numProphecyCardsToDisplay, numTranslationCardsToDiscard, numTranslationCardsToDisplay;
 	
 //	private int tanTowerDiscardCount, redTowerDiscardCount, blueTowerDiscardCount, greenTowerDiscardCount;
 	
@@ -513,6 +514,17 @@ public class Onirim extends JFrame
 			c.setVisible(false);
 		}
 		prophecyCards.clear();
+	}
+	
+	public void emptyTranslation()
+	{
+		for(Card c : TranslationCards)
+		{
+			c.setX(-200);
+			c.setY(0);
+			c.setVisible(false);
+		}
+		TranslationCards.clear();
 	}
 	
 	public boolean clickedDeck(int x, int y)
@@ -1022,40 +1034,28 @@ public class Onirim extends JFrame
 		prophecyInPlay = false; // there must have been all doors in hand
 	}
 	
-	public void setTranslation(int numForsee, int numDiscard)
+	public void setTranslation(int numForsee, int numDiscard)//TODO
 	{
-		emptyProphecy(); // in case you still have cards in the deck when you trigger
-		prophecyInPlay = true;		// another prophecy
+		emptyTranslation(); // in case you still have cards in the deck when you trigger
+		TranslationInPlay = true;		// another prophecy
 		// set the original 5 cards.
-		numProphecyCardsToDiscard = numDiscard;
-		numProphecyCardsToDisplay = numForsee;
+		numTranslationCardsToDiscard = numDiscard;
+		numTranslationCardsToDisplay = numForsee;
 		for(int i = 0; i < numForsee; i++)
 		{
 			if(i >= deck.size())
 			{
-				numProphecyCardsToDisplay = i;
+				numTranslationCardsToDisplay = i;
 				break; 
 			}
 			Card temp = deck.get(i);
 			toDraw.add(temp);
-			prophecyCards.add(temp);
+			TranslationCards.add(temp);
 			temp.setY(drawMinY - cardHeight);
 			temp.setX(drawMaxX + cardWidth*(i+1));
 			temp.setMovable(true);  
 			temp.setVisible(true);
 		}
-		// WHAT IF ALL OF THE CARDS ARE DOORS.  WE CAN'T DISCARD DOORS
-		for(Card c : prophecyCards)
-		{
-			if(!(c.getType().contains("door")))
-			{
-				lockHand();
-				return;
-			}
-		}
-		for(Card c : prophecyCards)
-			c.setMovable(false);
-		prophecyInPlay = false; // there must have been all doors in hand
 	}
 	
 	public Card clickedProphecyCard(int x, int y)
@@ -1075,7 +1075,7 @@ public class Onirim extends JFrame
 		}
 		return null;
 	}
-	
+
 	// currently, this happens, but gets skipped, as there is no pause.  
 	// the game could end, in which case you MAY see this happen
 	public void drawFiveNightmarePlay()//TODO
@@ -1321,6 +1321,14 @@ public class Onirim extends JFrame
 					adjustProphecy();
 					drawCard();
 				}
+				else if(TranslationInPlay && numTranslationCardsToDiscard == 0 //TODO
+						&& clickedDeck(mickey.getX(), mickey.getY()))
+				{
+					prophecyInPlay = false; //frees the deck
+					lockProphecyAndSetProphecyOrder();
+					adjustProphecy();
+					drawCard();
+				}
 				else if(clickedTrapDoor(mickey.getX(), mickey.getY())) // TODO
 				{
 					if(deck.size() < 5)
@@ -1415,7 +1423,7 @@ public class Onirim extends JFrame
 						}
 						if(Glyphs)
 						{
-							if(c.getType().containts("Glyph"))
+							if(c.getType().contains("Glyph"))
 							{
 								setTranslation(5, 1);
 							}
@@ -1431,7 +1439,7 @@ public class Onirim extends JFrame
 							lockProphecyAndSetProphecyOrder();
 							adjustProphecy();
 							adjustHand();//TODO
-							numProphecyCardsToDiscard = 0; 
+							numProphecyCardsToDiscard = 0;
 							numProphecyCardsToDisplay = 0;
 						}
 						
