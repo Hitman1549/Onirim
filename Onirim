@@ -102,7 +102,7 @@ public class Onirim extends JFrame
 	
 	private Card doorFromSet, doorFromKey;
 	
-	private boolean firstDraw = true, prophecyInPlay, movedProphecyCard, TranslationInPlay; 
+	private boolean firstDraw = true, prophecyInPlay, movedProphecyCard, TranslationInPlay, movedTranslationCard; 
 //	private boolean incantationInPlay, movedIncantationCard;
 //	private boolean paradoxicalProphecyInPlay, movedParadoxicalProphecyCard;
 	private boolean fillingHandSoIgnoreNightmares;
@@ -170,17 +170,17 @@ public class Onirim extends JFrame
 					
 			limbo.add(new Card(td, "door", "tan"));
 			//***********************************************************************************
-			limbo.add(new Card(rg, "Glyph", "red"));
-			limbo.add(new Card(rg, "Glyph", "red"));
+			limbo.add(new Card(rg, "locationGlyph", "red"));
+			limbo.add(new Card(rg, "locationGlyph", "red"));
 					
-			limbo.add(new Card(bg, "Glyph", "blue"));
-			limbo.add(new Card(bg, "Glyph", "blue"));
+			limbo.add(new Card(bg, "locationGlyph", "blue"));
+			limbo.add(new Card(bg, "locationGlyph", "blue"));
 					
-			limbo.add(new Card(gd, "Glyph", "green"));
-			limbo.add(new Card(gd, "Glyph", "green"));
+			limbo.add(new Card(gd, "locationGlyph", "green"));
+			limbo.add(new Card(gd, "locationGlyph", "green"));
 					
-			limbo.add(new Card(td, "Glyph", "tan"));
-			limbo.add(new Card(td, "Glyph", "tan"));
+			limbo.add(new Card(td, "locationGlyph", "tan"));
+			limbo.add(new Card(td, "locationGlyph", "tan"));
 		}
 		// if playing with the crossroads expansion
 		/*
@@ -308,7 +308,7 @@ public class Onirim extends JFrame
 			g.drawImage(xm, 50 + 40 + cardWidth, yStart + 1*yChange, cardWidth, cardHeight, this);
 			g.drawImage(xk, 50 + 70 + cardWidth, yStart + 1*yChange, cardWidth, cardHeight, this);
 			
-			g.fillRect(20, yStart + 3*cardHeight/2 /*+ yChange*/, 20, 20);
+			g.fillRect(20, yStart + 5*cardHeight/2 + 10 /*+ yChange*/, 20, 20);
 			g.drawString("Glyphs" , 500, yStart + 3*cardHeight/2 /*+ yChange*/ + 5);
 			g.drawImage(tg, 50     , yStart + 2*yChange, cardWidth, cardHeight, this);
 			g.drawImage(bg, 50 + 30, yStart + 2*yChange, cardWidth, cardHeight, this);
@@ -319,7 +319,7 @@ public class Onirim extends JFrame
 			
 			if(Glyphs)
 			{
-				g.fillRect(20, yStart + 4*cardHeight/2 /*+ yChange*/, 20, 20);
+				g.fillRect(20, yStart + 5*cardHeight/2 + 10 /*+ yChange*/, 20, 20);
 			}
 			
 			if(crossroadExpansion)
@@ -330,7 +330,9 @@ public class Onirim extends JFrame
 			g.setColor(Color.black);
 			
 			g.drawRect(20, yStart + 3*cardHeight/2 /*+ yChange*/, 20, 20);
-		
+			
+			g.drawRect(20, yStart + 5*cardHeight/2  + 10/*+ yChange*/, 20, 20);
+			
 			g.setColor(Color.white);
 		}
 		else
@@ -361,12 +363,12 @@ public class Onirim extends JFrame
 			}
 			if(Glyphs)//TODO AHHHHHHHHHHHHHH
 			{
-				trapMinX = screenWidth - 125;
-				trapMinY = screenHeight - 240;
-				trapMaxY = trapMinY + cardHeight;	
-				trapMaxX = trapMinX + cardWidth;
+//				trapMinX = screenWidth - 125;
+//				trapMinY = screenHeight - 240;
+//				trapMaxY = trapMinY + cardHeight;	
+//				trapMaxX = trapMinX + cardWidth;
 				g.setColor(Color.RED);
-				g.fillRect(trapMinX,  trapMinY, trapMaxX - trapMinX, trapMaxY - trapMinY);
+				g.fillRect(screenWidth - 125,  screenHeight - 240, screenWidth - 125 + cardWidth - screenWidth - 125, screenHeight - 240 + cardHeight - screenHeight - 240);
 			}
 			g.drawImage(cardBack, 10, screenHeight - cardHeight -100, cardWidth, cardHeight, this);
 			g.setColor(Color.white);
@@ -1033,11 +1035,29 @@ public class Onirim extends JFrame
 			c.setMovable(false);
 		prophecyInPlay = false; // there must have been all doors in hand
 	}
+		
+	public Card clickedProphecyCard(int x, int y)
+	{
+		if(!prophecyInPlay)
+			return null;
+		
+		
+		for(Card c : prophecyCards)
+		{
+			if(x > c.getX() + fudgeX && x < c.getX() + cardWidth + fudgeX
+					&& y > c.getY() + fudgeY && y < c.getY() + cardHeight + fudgeY)
+			{
+				movedProphecyCard = true;
+				return c;
+			}
+		}
+		return null;
+	}
 	
 	public void setTranslation(int numForsee, int numDiscard)//TODO
 	{
 		emptyTranslation(); // in case you still have cards in the deck when you trigger
-		TranslationInPlay = true;		// another prophecy
+		TranslationInPlay = true;		// another TRANSLATION
 		// set the original 5 cards.
 		numTranslationCardsToDiscard = numDiscard;
 		numTranslationCardsToDisplay = numForsee;
@@ -1058,27 +1078,29 @@ public class Onirim extends JFrame
 		}
 	}
 	
-	public Card clickedProphecyCard(int x, int y)
+
+
+	
+	public Card clickedTranslationCard(int x, int y)
 	{
-		if(!prophecyInPlay)
+		if(!TranslationInPlay)
 			return null;
 		
 		
-		for(Card c : prophecyCards)
+		for(Card c : TranslationCards)
 		{
 			if(x > c.getX() + fudgeX && x < c.getX() + cardWidth + fudgeX
 					&& y > c.getY() + fudgeY && y < c.getY() + cardHeight + fudgeY)
 			{
-				movedProphecyCard = true;
+				movedTranslationCard = true;
 				return c;
 			}
 		}
 		return null;
 	}
-
 	// currently, this happens, but gets skipped, as there is no pause.  
 	// the game could end, in which case you MAY see this happen
-	public void drawFiveNightmarePlay()//TODO
+	public void drawFiveNightmarePlay()
 	{
 		discardNightmare();
 		//send five cards to limbo for the user to see
@@ -1263,6 +1285,13 @@ public class Onirim extends JFrame
 				int y1 = 120 - cardHeight/2 + 10 + 3*cardHeight/2;
 				int yChange = 10 + cardHeight;
 
+				if(mickey.getX() >= 20 + fudgeX && mickey.getX() <= 40 + fudgeX //TODO
+						&& mickey.getY() >= y1 + fudgeY + 2*cardHeight/2 /*+ yChange*/
+						&& mickey.getY() <= y1 + 20 + fudgeY + 2*cardHeight/2 /*+ yChange*/)
+				{
+					Glyphs = !Glyphs;
+				}
+				
 				if(mickey.getX() >= 20 + fudgeX && mickey.getX() <= 40 + fudgeX 
 						&& mickey.getY() >= y1 + fudgeY /*+ yChange*/
 						&& mickey.getY() <= y1 + 20 + fudgeY /*+ yChange*/)
