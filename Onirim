@@ -1059,7 +1059,6 @@ public class Onirim extends JFrame
 		emptyTranslation(); // in case you still have cards in the deck when you trigger
 		TranslationInPlay = true;		// another TRANSLATION
 		// set the original 5 cards.
-		numTranslationCardsToDiscard = numDiscard;
 		numTranslationCardsToDisplay = numForsee;
 		for(int i = 0; i < numForsee; i++)
 		{
@@ -1410,7 +1409,13 @@ public class Onirim extends JFrame
 					deltaDragX = clickedProphecyCard(mickey.getX(), mickey.getY()).getX(); // set DeltaDragX
 					oldX = deltaDragX;  // a copy
 				}
-		
+				else if(TranslationInPlay &&/* (prophecyCards.size() == 5 || prophecyCards.size() == deck.size())*/
+						TranslationCards.size() == numTranslationCardsToDisplay && 
+						clickedTranslationCard(mickey.getX(), mickey.getY())!=null) 
+				{
+					deltaDragX = clickedProphecyCard(mickey.getX(), mickey.getY()).getX(); // set DeltaDragX
+					oldX = deltaDragX;  // a copy
+				}
 				if(hand.size() == 5)
 				{
 					shuffleLimbo();
@@ -1486,6 +1491,35 @@ public class Onirim extends JFrame
 						}
 					}
 				
+					
+					else if(TranslationInPlay && (TranslationCards.size() == numTranslationCardsToDisplay))// || prophecyCards.size() == deck.size()))
+					{ 
+						if(isDiscard(c) && numTranslationCardsToDiscard == 1)
+						{
+							sendToDiscard(c);
+							TranslationInPlay = false; //frees the deck
+							lockProphecyAndSetProphecyOrder();
+							adjustProphecy();
+							adjustHand();//TODO
+							numProphecyCardsToDiscard = 0;
+							numProphecyCardsToDisplay = 0;
+						}
+						
+						else if(movedTranslationCard)
+						{
+							movedTranslationCard = false;
+							deltaDragX = 0; //released prophecy card.  reset deltaDragX to zero
+							adjustProphecy();
+							c.setY(startCardY);
+						}
+						else
+						{
+							c.setX(startCardX);
+							c.setY(startCardY);
+						}
+					}
+					
+					
 					else if(hasBeenPlayed)
 					{
 						if(mickey.getY() > drawMinY) // moved card below play area
