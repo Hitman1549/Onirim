@@ -100,7 +100,7 @@ public class Onirim extends JFrame
 	private Font endFont = new Font("Castellar", Font.PLAIN, 100);
 	private Font titleFont = new Font("Elephant", Font.PLAIN, 40);
 	
-	private Card doorFromSet, doorFromKey;
+	private Card doorFromSet, doorFromKey, doorFromGlyph;
 	
 	private boolean firstDraw = true, prophecyInPlay, movedProphecyCard, TranslationInPlay, movedTranslationCard; 
 //	private boolean incantationInPlay, movedIncantationCard;
@@ -155,7 +155,7 @@ public class Onirim extends JFrame
 		limbo.add(new Card(bd, "door", "blue"));
 				
 		limbo.add(new Card(gd, "door", "green"));
-		limbo.add(new Card(gd, "door", "green"));
+		limbo.add(new Card(gd, "door", "green")); 
 				
 		limbo.add(new Card(td, "door", "tan"));
 		limbo.add(new Card(td, "door", "tan"));
@@ -176,11 +176,11 @@ public class Onirim extends JFrame
 			limbo.add(new Card(bg, "locationGlyph", "blue"));
 			limbo.add(new Card(bg, "locationGlyph", "blue"));
 					
-			limbo.add(new Card(gd, "locationGlyph", "green"));
-			limbo.add(new Card(gd, "locationGlyph", "green"));
+			limbo.add(new Card(gg, "locationGlyph", "green"));
+			limbo.add(new Card(gg, "locationGlyph", "green"));
 					
-			limbo.add(new Card(td, "locationGlyph", "tan"));
-			limbo.add(new Card(td, "locationGlyph", "tan"));
+			limbo.add(new Card(tg, "locationGlyph", "tan"));
+			limbo.add(new Card(tg, "locationGlyph", "tan"));
 		}
 		// if playing with the crossroads expansion
 		/*
@@ -191,13 +191,13 @@ public class Onirim extends JFrame
 		 */
 		if(crossroadExpansion) //TODO
 		{
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 0; i++)
 				limbo.add(new Card(deadEnd, "DeadEnd", "DeadEnd"));
-			for(int i = 0; i < 3; i++)
+			for(int i = 0; i < 10; i++)
 				limbo.add(new Card(xs, "locationSun", "all"));
-			for(int i = 0; i < 2; i++)
+			for(int i = 0; i < 10; i++)
 				limbo.add(new Card(xm, "locationMoon", "all"));
-			for(int i = 0; i < 1; i++)
+			for(int i = 0; i < 10; i++)
 				limbo.add(new Card(xk, "locationKey", "all"));
 		}
 		
@@ -534,13 +534,18 @@ public class Onirim extends JFrame
 		return(x > drawMinX + fudgeX && x < drawMaxX + fudgeX
 				&& y > drawMinY + fudgeY && y < drawMaxY + fudgeY);	
 	}
-	public boolean clickedTrapDoor(int x, int y)
+	public boolean clickedTrapDoor(int x, int y)//TODO     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	{	
 		trapMinX = screenWidth - 125;
 		trapMinY = screenHeight - 240;
 		trapMaxY = trapMinY + cardHeight;	
 		trapMaxX = trapMinX + cardWidth;
-		return(x > trapMinX && x < trapMaxX && y > trapMinY && y < trapMaxY);
+		System.out.println("cardHeight = " + cardHeight);
+		System.out.println("cardWidth = " + cardWidth);
+		if(crossroadExpansion && hand.size() == 5)
+			return(x > trapMinX && x < trapMaxX && y > trapMinY && y < trapMaxY);
+		else
+			return false;
 	}
 	
 	public void freeHand()
@@ -741,9 +746,19 @@ public class Onirim extends JFrame
 			System.out.println(col2);
 		
 		String Ran = "all";
-		// Card Card Crossroad
+		
 		if(crossroadExpansion)
-		{
+		{	
+			if(!(col.equals("all") && col1.equals("all")) && !(col1.equals("all") && col2.equals("all")) && !(col.equals("all") && col2.equals("all")))
+			{
+				if(col.equals("all"))
+					col.equals(col1);
+				if(col1.equals("all"))
+					col1.equals(col);
+				if(col2.equals("all"))
+					col2.equals(col);
+			}
+			// Card Card Crossroad
 			if(!col.equals(col2) && col.equals(col1) && col2.equals("all"))
 			{
 				System.out.println("Card Card Crossroad");
@@ -754,7 +769,7 @@ public class Onirim extends JFrame
 			else
 			System.out.println("        FAIL 1");
 			// Card Crossroad Card
-			if(!col.equals(col1) && col.equals(col2) && col1.equals("all"))
+			if(!col2.equals(col1) && col.equals(col2) && col1.equals("all"))
 			{
 				System.out.println("Card Crossroad Card");
 				lockLastLocationPlay();
@@ -918,7 +933,7 @@ public class Onirim extends JFrame
 		deck.remove(doorFromSet);
 		adjustPlayedDoors();  
 		doorFromSet = null;
-		 
+		
 		shuffleDeck();
 		gameOver = checkForWin();
 	}
@@ -951,6 +966,27 @@ public class Onirim extends JFrame
 		gameOver = checkForWin();
 	}
 	
+	public void scoreDoorFromGlyph(Card k)
+	{
+		
+		doorFromGlyph.setY(10);//TODO
+		doorFromGlyph.setX((int)(30+(cardWidth*scaleFactor)*(nextDoorIndex()+1)));
+		limbo.remove(doorFromGlyph);
+		
+		if(nextDoorIndex() == playedDoors.size())
+		{
+			playedDoors.add(doorFromGlyph);
+		}
+		else
+		{
+			playedDoors.set(nextDoorIndex(), doorFromGlyph);
+		}
+		doorFromGlyph = null;
+		sendToDiscard(k);
+		toDraw.remove(k); // needed because we didn't move it, 
+		toDraw.add(0,k);  // which reorders it in toDraw
+		gameOver = checkForWin();
+	}
 	
 	public void adjustDiscard(Card c)
 	{
@@ -1052,12 +1088,23 @@ public class Onirim extends JFrame
 			}
 		}
 		return null;
-	}
-	
-	public void setTranslation(int numForsee, int numDiscard)//TODO
+	} 
+	public void TranslationSays(Card c)
 	{
-		emptyTranslation(); // in case you still have cards in the deck when you trigger
-		TranslationInPlay = true;		// another TRANSLATION
+		if(TranslationInPlay == true)
+		{
+			for(int i = 0; i < TranslationCards.size(); i++)
+			{
+				if(TranslationCards.get(i) == c)
+				{
+					playedDoors.add(TranslationCards.remove(i));
+				}
+			}
+		}
+	}
+	public void setTranslation(int numForsee)//TODO
+	{
+		TranslationInPlay = true;		
 		// set the original 5 cards.
 		numTranslationCardsToDisplay = numForsee;
 		for(int i = 0; i < numForsee; i++)
@@ -1310,7 +1357,7 @@ public class Onirim extends JFrame
 			{
 				//this allows you to move around movable cards
 				moveCard(mickey.getX(), mickey.getY());
-			
+			System.out.println("mickey.getX() = " + mickey.getX() + ", mickey.getY() = " + mickey.getY());
 				//fill hand to 5 cards, sending doors and dreams to limbo temporarily
 				if(firstDraw)
 					drawHand(mickey.getX(), mickey.getY());
@@ -1340,7 +1387,19 @@ public class Onirim extends JFrame
 						nightMareInPlay = false;
 						shuffleLimbo();
 					}
+				}				
+				else if(TranslationInPlay && clickedDeck(mickey.getX(), mickey.getY()))
+				{
+					while(TranslationCards.size() > 0)
+					{
+						System.out.print("Translation");
+						deck.add(TranslationCards.remove(0));
+						System.out.print("Translation is deconstructing");
+					}
+					TranslationInPlay = false; 
 				}
+				
+
 				else if(prophecyInPlay && numProphecyCardsToDiscard == 0 
 						&& clickedDeck(mickey.getX(), mickey.getY()))
 				{
@@ -1349,14 +1408,7 @@ public class Onirim extends JFrame
 					adjustProphecy();
 					drawCard();
 				}
-				else if(TranslationInPlay && numTranslationCardsToDiscard == 0 //TODO
-						&& clickedDeck(mickey.getX(), mickey.getY()))
-				{
-					prophecyInPlay = false; //frees the deck
-					lockProphecyAndSetProphecyOrder();
-					adjustProphecy();
-					drawCard();
-				}
+
 				else if(clickedTrapDoor(mickey.getX(), mickey.getY())) // TODO
 				{
 					if(deck.size() < 5)
@@ -1366,16 +1418,15 @@ public class Onirim extends JFrame
 					else
 					if(!gameOver)
 					{
+						System.out.println("Test 1");
 						discardHand();
-						fillHand();
-					}
-					if(hand.size()==5)
-					{
-						for(Card c : hand)
+						System.out.println("Test 1 passed");
+						firstDraw = true;
+						while(hand.size() != 5)
 						{
-							c.setMovable(true);
+							drawCard();
 						}
-						shuffleLimbo();
+						firstDraw = false;
 					}
 				}
 				
@@ -1409,13 +1460,6 @@ public class Onirim extends JFrame
 					deltaDragX = clickedProphecyCard(mickey.getX(), mickey.getY()).getX(); // set DeltaDragX
 					oldX = deltaDragX;  // a copy
 				}
-				else if(TranslationInPlay &&/* (prophecyCards.size() == 5 || prophecyCards.size() == deck.size())*/
-						TranslationCards.size() == numTranslationCardsToDisplay && 
-						clickedTranslationCard(mickey.getX(), mickey.getY())!=null) 
-				{
-					deltaDragX = clickedProphecyCard(mickey.getX(), mickey.getY()).getX(); // set DeltaDragX
-					oldX = deltaDragX;  // a copy
-				}
 				if(hand.size() == 5)
 				{
 					shuffleLimbo();
@@ -1438,6 +1482,16 @@ public class Onirim extends JFrame
 					System.out.println("c.getType() != DeadEnd = " + (c.getType() != "DeadEnd"));
 					c.setSelected(false);
 					
+					if(c.getType().contains("door"))//TODO
+					{
+						if(!nightMareInPlay && searchHandForCorrectKey(c))
+							doorFromGlyph = c;
+						limbo.add(deck.remove(0));
+						c.setX(drawMaxX + cardWidth*(limbo.size()-1) + 6*cardWidth);
+						c.setY(drawMinY);
+						c.setVisible(true);
+					}
+					
 					// didn't drop into play area so snap back to original position 
 					//PLAY LOCATION
 					if(!hasBeenPlayed && isValidLocationPlay(c) && !prophecyCards.contains(c) && !isDiscard(c))
@@ -1447,7 +1501,7 @@ public class Onirim extends JFrame
 						setPlayedLocationCoordinates(c);
 					}
 					//DISCARD
-					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c)  && c.getType() != "DeadEnd")//TODO
+					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c)  && c.getType() != "DeadEnd" && !TranslationInPlay)//TODO
 					{
 						System.out.println("Discard");
 						sendToDiscard(c);
@@ -1459,11 +1513,21 @@ public class Onirim extends JFrame
 						{
 							if(c.getType().contains("Glyph"))
 							{
-								setTranslation(5, 1);
+								TranslationInPlay = true;
+								setTranslation(5);
 							}
 						}
 					}
-					
+					else if(TranslationInPlay)
+					{
+							if( mickey.getX() > c.getX() + fudgeX && mickey.getX() < c.getX() + cardWidth + fudgeX
+									&& mickey.getY() > c.getY() + fudgeY && mickey.getY() < c.getY() + cardHeight + fudgeY
+										&&  c.getType().contains("door") )
+							{
+								scoreDoorFromGlyph(c);
+								TranslationInPlay = false; 
+							}
+					}
 					else if(prophecyInPlay && (prophecyCards.size() == numProphecyCardsToDisplay))// || prophecyCards.size() == deck.size()))
 					{ 
 						if(isDiscard(c) && numProphecyCardsToDiscard == 1)
