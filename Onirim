@@ -626,7 +626,7 @@ public class Onirim extends JFrame
 		 * 
 		 * Otherwise, you draw five cards.  Any location goes to discard.  Any dream or door goes to limbo. 
 		 */
-		else if(temp.getType().contains("dream"))
+		else if(temp.getType().contains("dream"))//TODO
 		{
 			limbo.add(deck.remove(0));
 			if(!fillingHandSoIgnoreNightmares)
@@ -841,7 +841,14 @@ public class Onirim extends JFrame
 				prophecyCards.get(k).setX(drawMaxX + cardWidth*(k+1));
 		}
 	}
-	
+	public void adjustTranslation(Card c)
+	{
+		for(int k = 0; k < TranslationCards.size(); k++) // move cards in translation
+		{
+			if(!TranslationCards.get(k).equals(c))
+				TranslationCards.get(k).setX(drawMaxX + cardWidth*(k+1));
+		}
+	}
 	public void setPlayedLocationCoordinates(Card c)
 	{
 		if(/*towersExpansion*/false)
@@ -1460,7 +1467,8 @@ public class Onirim extends JFrame
 					deltaDragX = clickedProphecyCard(mickey.getX(), mickey.getY()).getX(); // set DeltaDragX
 					oldX = deltaDragX;  // a copy
 				}
-				if(hand.size() == 5)
+
+				if(hand.size() == 5 && !prophecyInPlay)
 				{
 					shuffleLimbo();
 					freeHand();
@@ -1652,6 +1660,34 @@ public class Onirim extends JFrame
 								prophecyCards.remove(temp);
 								prophecyCards.add(j-1,temp);
 								adjustProphecy(c);       
+							}
+						}
+						oldX = c.getX(); // updating delta after some computations
+					}
+					
+					if(TranslationCards.contains(c)) // move this out if dragged becomes more complex
+					{
+						deltaDragX = c.getX() - oldX;
+						
+						
+						for(int j = 0; j < Math.min(TranslationCards.size(), deck.size()); j++)
+						{
+							Card temp = prophecyCards.get(j);
+							if(!temp.equals(c) && deltaDragX < 0 && c.getX() < temp.getX() + cardWidth - 10 && c.getX() > temp.getX()) 
+							{
+								TranslationCards.remove(c);
+								TranslationCards.add(j, c);
+								TranslationCards.remove(temp);
+								TranslationCards.add(j+1,temp);
+								adjustTranslation(c);       
+							}
+							else if(!temp.equals(c) && deltaDragX > 0 && c.getX() + cardWidth > temp.getX() + 10 && c.getX()< temp.getX())
+							{
+								TranslationCards.remove(c);
+								TranslationCards.add(j, c);
+								TranslationCards.remove(temp);
+								TranslationCards.add(j-1,temp);
+								adjustTranslation(c);       
 							}
 						}
 						oldX = c.getX(); // updating delta after some computations
