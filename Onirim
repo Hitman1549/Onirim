@@ -105,7 +105,6 @@ public class Onirim extends JFrame
 //	private boolean incantationInPlay, movedIncantationCard;
 //	private boolean paradoxicalProphecyInPlay, movedParadoxicalProphecyCard;
 	private boolean fillingHandSoIgnoreNightmares;
-	private boolean Incantation = false;
 	private boolean  nightMareInPlay;
 
 	private boolean gameOver;
@@ -917,7 +916,7 @@ public class Onirim extends JFrame
 		return null;
 	}
 	
-	public boolean IncanatationToDoor(Card c, MouseEvent mickey)//TODO Find out the coordinates to the Played doors stack
+	public boolean OnDoors(Card c, MouseEvent mickey)//TODO Find out the coordinates to the Played doors stack
 	{
 		//			Min y coord : (10 + cardHeight)
 		//			Min x coord : drawMaxX
@@ -993,25 +992,14 @@ public class Onirim extends JFrame
 		gameOver = checkForWin();
 	}
 	
-	public void scoreDoorFromGlyph(Card k)
+	public void scoreDoorFromGlyph(Card k)//TODO
 	{
-		
-		doorFromGlyph.setY(10);//TODO
-		doorFromGlyph.setX((int)(30+(cardWidth*scaleFactor)*(nextDoorIndex()+1)));
-		limbo.remove(doorFromGlyph);
+		IncantationCards.remove(k);
 		
 		if(nextDoorIndex() == playedDoors.size())
 		{
-			playedDoors.add(doorFromGlyph);
+			playedDoors.add(k);
 		}
-		else
-		{
-			playedDoors.set(nextDoorIndex(), doorFromGlyph);
-		}
-		doorFromGlyph = null;
-		sendToDiscard(k);
-		toDraw.remove(k); // needed because we didn't move it, 
-		toDraw.add(0,k);  // which reorders it in toDraw
 		gameOver = checkForWin();
 	}
 	
@@ -1418,16 +1406,6 @@ public class Onirim extends JFrame
 						shuffleLimbo();
 					}
 				}				
-				else if(IncantationInPlay && clickedDeck(mickey.getX(), mickey.getY()))
-				{
-					while(IncantationCards.size() > 0)
-					{
-						System.out.print("Incantation");
-						deck.add(IncantationCards.remove(0));
-						System.out.print("Incantation is deconstructing");
-					}
-					IncantationInPlay = false; 
-				}
 				
 
 				else if(prophecyInPlay && numProphecyCardsToDiscard == 0 
@@ -1441,12 +1419,11 @@ public class Onirim extends JFrame
 
 				else if(IncantationInPlay && clickedDeck(mickey.getX(), mickey.getY()))//TODO Just put this in, hope it does'nt mess with anything
 				{
-					IncantationInPlay = false; //frees the deck
-					adjustIncantation();
 					while(IncantationCards.size() > 0)
 					{
 						deck.add(IncantationCards.remove(0));
 					}
+					IncantationInPlay = false; //frees the deck
 					shuffleDeck();
 					drawCard();
 				}
@@ -1512,6 +1489,7 @@ public class Onirim extends JFrame
 
 		public void mouseReleased(MouseEvent mickey) 
 		{
+			
 			System.out.println("Mouse Released");
 			for(int i = 0; i < toDraw.size(); i++)
 			{
@@ -1555,37 +1533,37 @@ public class Onirim extends JFrame
 						{
 							if(c.getType().contains("Glyph"))
 							{
-								IncantationInPlay = true;
 								setIncantation(5);
+								System.out.println("Incantation in play = " + IncantationInPlay);
 							}
 						}
 					}					
-					else if(IncantationInPlay && (IncantationCards.size() == numIncantationCardsToDisplay))// || prophecyCards.size() == deck.size()))
-					{ 
-						if(isDiscard(c) && numIncantationCardsToDiscard == 1)
-						{
-							sendToDiscard(c);
-							IncantationInPlay = false; //frees the deck
-							lockProphecyAndSetProphecyOrder();
-							adjustProphecy();
-							adjustHand();//TODO
-							numProphecyCardsToDiscard = 0;
-							numProphecyCardsToDisplay = 0;
-						}
-						
-						else if(movedIncantationCard)
-						{
-							movedIncantationCard = false;
-							deltaDragX = 0; //released prophecy card.  reset deltaDragX to zero
-							adjustProphecy();
-							c.setY(startCardY);
-						}
-						else
-						{
-							c.setX(startCardX);
-							c.setY(startCardY);
-						}
-					}
+//					else if(IncantationInPlay && (IncantationCards.size() == numIncantationCardsToDisplay))// || prophecyCards.size() == deck.size()))
+//					{ 
+//						if(isDiscard(c) && numIncantationCardsToDiscard == 1)
+//						{
+//							sendToDiscard(c);
+//							IncantationInPlay = false; //frees the deck
+//							lockProphecyAndSetProphecyOrder();
+//							adjustProphecy();
+//							adjustHand();//TODO
+//							numProphecyCardsToDiscard = 0;
+//							numProphecyCardsToDisplay = 0;
+//						}
+//						
+//						else if(movedIncantationCard)
+//						{
+//							movedIncantationCard = false;
+//							deltaDragX = 0; //released prophecy card.  reset deltaDragX to zero
+//							adjustProphecy();
+//							c.setY(startCardY);
+//						}
+//						else
+//						{
+//							c.setX(startCardX);
+//							c.setY(startCardY);
+//						}
+//					}
 
 					else if(prophecyInPlay && (prophecyCards.size() == numProphecyCardsToDisplay))// || prophecyCards.size() == deck.size()))
 					{ 
@@ -1615,8 +1593,9 @@ public class Onirim extends JFrame
 					}
 				
 										
-					else if(IncantationInPlay && IncanatationToDoor(c, mickey))//TODO
+					else if(IncantationInPlay && OnDoors(c, mickey))//TODO
 					{
+						System.out.print("You attempt to play a door");
 						scoreDoorFromGlyph(c);
 						IncantationInPlay = false; 
 					}
