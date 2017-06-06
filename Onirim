@@ -65,7 +65,6 @@ public class Onirim extends JFrame
 	private int drawMinX = 10, drawMaxX = drawMinX + cardWidth;
 
 	private int screenWidth,screenHeight;
-	//TODO
 
 	private int drawMinY;
 	private int drawMaxY;
@@ -87,7 +86,7 @@ public class Onirim extends JFrame
 	private ArrayList<Card> playedLocations = new ArrayList<Card>();
 	private ArrayList<Card> playedDoors = new ArrayList<Card>();
 	private ArrayList<Card> prophecyCards = new ArrayList<Card>();
-	private ArrayList<Card> TranslationCards = new ArrayList<Card>();
+	private ArrayList<Card> IncantationCards = new ArrayList<Card>();
 //	private ArrayList<Card> incantationCards = new ArrayList<Card>();
 //	private ArrayList<Card> blurredDoors = new ArrayList<Card>();
 //	private ArrayList<Card> highlightedDiscards = new ArrayList<Card>();
@@ -102,11 +101,11 @@ public class Onirim extends JFrame
 	
 	private Card doorFromSet, doorFromKey, doorFromGlyph;
 	
-	private boolean firstDraw = true, prophecyInPlay, movedProphecyCard, TranslationInPlay, movedTranslationCard; 
+	private boolean firstDraw = true, prophecyInPlay, movedProphecyCard, IncantationInPlay, movedIncantationCard; 
 //	private boolean incantationInPlay, movedIncantationCard;
 //	private boolean paradoxicalProphecyInPlay, movedParadoxicalProphecyCard;
 	private boolean fillingHandSoIgnoreNightmares;
-	private boolean translation = false;
+	private boolean Incantation = false;
 	private boolean  nightMareInPlay;
 
 	private boolean gameOver;
@@ -133,7 +132,7 @@ public class Onirim extends JFrame
 //	private boolean activatedSpellOne, activatedSpellTwo, activatedSpellThree, completeSpellTwo;
 	
 //	private boolean canPlayTowerLeft, canPlayTowerRight, towersComplete, mustDiscardTower;
-	private int numProphecyCardsToDiscard, numProphecyCardsToDisplay, numTranslationCardsToDiscard, numTranslationCardsToDisplay;
+	private int numProphecyCardsToDiscard, numProphecyCardsToDisplay, numIncantationCardsToDiscard, numIncantationCardsToDisplay;
 	
 //	private int tanTowerDiscardCount, redTowerDiscardCount, blueTowerDiscardCount, greenTowerDiscardCount;
 	
@@ -162,6 +161,7 @@ public class Onirim extends JFrame
 		
 		if(Glyphs)
 		{
+			for(int i = 0; i < 10; i++)
 			limbo.add(new Card(rd, "door", "red"));
 					
 			limbo.add(new Card(bd, "door", "blue"));
@@ -170,17 +170,17 @@ public class Onirim extends JFrame
 					
 			limbo.add(new Card(td, "door", "tan"));
 			//***********************************************************************************
-			limbo.add(new Card(rg, "locationGlyph", "red"));
-			limbo.add(new Card(rg, "locationGlyph", "red"));
+			for(int i = 0; i < 10; i++)
+				limbo.add(new Card(rg, "locationGlyph", "red"));
 					
-			limbo.add(new Card(bg, "locationGlyph", "blue"));
-			limbo.add(new Card(bg, "locationGlyph", "blue"));
+			for(int i = 0; i < 10; i++)
+				limbo.add(new Card(bg, "locationGlyph", "blue"));
+				
+			for(int i = 0; i < 10; i++)
+				limbo.add(new Card(gg, "locationGlyph", "green"));
 					
-			limbo.add(new Card(gg, "locationGlyph", "green"));
-			limbo.add(new Card(gg, "locationGlyph", "green"));
-					
-			limbo.add(new Card(tg, "locationGlyph", "tan"));
-			limbo.add(new Card(tg, "locationGlyph", "tan"));
+			for(int i = 0; i < 10; i++)
+				limbo.add(new Card(tg, "locationGlyph", "tan"));
 		}
 		// if playing with the crossroads expansion
 		/*
@@ -375,20 +375,21 @@ public class Onirim extends JFrame
 			g.drawString("DECK: " + deck.size() + "                                      HAND"
 					+ "                                         LIMBO", 
 					16, screenHeight -78);
-		
+			g.setColor(Color.ORANGE);
 			g.drawLine(drawMinX, 0, drawMinX, screenHeight);
-			g.drawLine(drawMaxX, 0, drawMaxX, screenHeight);
-		
+			g.setColor(Color.CYAN);
+			g.drawLine(drawMaxX, 0, drawMaxX, screenHeight);//The rightmost discard line
+			g.setColor(Color.RED);
 			g.drawLine(0, drawMinY, screenWidth, drawMinY);
+			g.setColor(Color.BLUE);
 			g.drawLine(0, drawMaxY, screenWidth, drawMaxY); 
-		
+			g.setColor(Color.GREEN);
 			// for left discard when needed
 			g.drawLine(screenWidth - cardWidth - 2*fudgeX-10, 10 + cardHeight, screenWidth - cardWidth - 2*fudgeX-10,screenHeight);
+			g.setColor(Color.CYAN);
 			g.drawLine(screenWidth - 2*fudgeX-10, 0, screenWidth  - 2*fudgeX-10,screenHeight);
-		
-			
-			
-			g.drawLine(drawMaxX, 10 + cardHeight, screenWidth, 10 + cardHeight);
+			g.setColor(Color.GREEN);
+			g.drawLine(drawMaxX, 10 + cardHeight, screenWidth, 10 + cardHeight);//Topmost line
 			if(gameOver)
 			{
 				g.setFont(endFont);
@@ -518,15 +519,15 @@ public class Onirim extends JFrame
 		prophecyCards.clear();
 	}
 	
-	public void emptyTranslation()
+	public void emptyIncantation()
 	{
-		for(Card c : TranslationCards)
+		for(Card c : IncantationCards)
 		{
 			c.setX(-200);
 			c.setY(0);
 			c.setVisible(false);
 		}
-		TranslationCards.clear();
+		IncantationCards.clear();
 	}
 	
 	public boolean clickedDeck(int x, int y)
@@ -832,6 +833,14 @@ public class Onirim extends JFrame
 		}
 	}
 	
+	public void adjustIncantation()
+	{
+		for(int k = 0; k < IncantationCards.size(); k++) // move cards in Incantation
+		{
+			IncantationCards.get(k).setX(drawMaxX + cardWidth*(k+1));
+		}
+	}
+	
 	// this is for when prophecy is active, and you are dragging cards.
 	public void adjustProphecy(Card c)
 	{
@@ -841,12 +850,12 @@ public class Onirim extends JFrame
 				prophecyCards.get(k).setX(drawMaxX + cardWidth*(k+1));
 		}
 	}
-	public void adjustTranslation(Card c)
+	public void adjustIncantation(Card c)
 	{
-		for(int k = 0; k < TranslationCards.size(); k++) // move cards in translation
+		for(int k = 0; k < IncantationCards.size(); k++) // move cards in Incantation
 		{
-			if(!TranslationCards.get(k).equals(c))
-				TranslationCards.get(k).setX(drawMaxX + cardWidth*(k+1));
+			if(!IncantationCards.get(k).equals(c))
+				IncantationCards.get(k).setX(drawMaxX + cardWidth*(k+1));
 		}
 	}
 	public void setPlayedLocationCoordinates(Card c)
@@ -907,6 +916,17 @@ public class Onirim extends JFrame
 		}
 		return null;
 	}
+	
+	public boolean IncanatationToDoor(Card c, MouseEvent mickey)//TODO Find out the coordinates to the Played doors stack
+	{
+		//			Min y coord : (10 + cardHeight)
+		//			Min x coord : drawMaxX
+		//			Max x coord : screenWidth - 2*fudgeX-10
+		if( mickey.getX() > drawMaxX && mickey.getX() < screenWidth - 2*fudgeX-10 && mickey.getY() < 10 + cardHeight && c.getType().contains("door") )
+			return true;
+		return false;
+	}
+	
 	/*
 	 * this is only used when you get a set and neglect to play the door 
 	 */
@@ -1096,34 +1116,34 @@ public class Onirim extends JFrame
 		}
 		return null;
 	} 
-	public void TranslationSays(Card c)
+	public void IncantationSays(Card c)
 	{
-		if(TranslationInPlay == true)
+		if(IncantationInPlay == true)
 		{
-			for(int i = 0; i < TranslationCards.size(); i++)
+			for(int i = 0; i < IncantationCards.size(); i++)
 			{
-				if(TranslationCards.get(i) == c)
+				if(IncantationCards.get(i) == c)
 				{
-					playedDoors.add(TranslationCards.remove(i));
+					playedDoors.add(IncantationCards.remove(i));
 				}
 			}
 		}
 	}
-	public void setTranslation(int numForsee)//TODO
+	public void setIncantation(int numForsee)//TODO
 	{
-		TranslationInPlay = true;		
+		IncantationInPlay = true;		
 		// set the original 5 cards.
-		numTranslationCardsToDisplay = numForsee;
+		numIncantationCardsToDisplay = numForsee;
 		for(int i = 0; i < numForsee; i++)
 		{
 			if(i >= deck.size())
 			{
-				numTranslationCardsToDisplay = i;
+				numIncantationCardsToDisplay = i;
 				break; 
 			}
 			Card temp = deck.get(i);
 			toDraw.add(temp);
-			TranslationCards.add(temp);
+			IncantationCards.add(temp);
 			temp.setY(drawMinY - cardHeight);
 			temp.setX(drawMaxX + cardWidth*(i+1));
 			temp.setMovable(true);  
@@ -1134,18 +1154,18 @@ public class Onirim extends JFrame
 
 
 	
-	public Card clickedTranslationCard(int x, int y)
+	public Card clickedIncantationCard(int x, int y)
 	{
-		if(!TranslationInPlay)
+		if(!IncantationInPlay)
 			return null;
 		
 		
-		for(Card c : TranslationCards)
+		for(Card c : IncantationCards)
 		{
 			if(x > c.getX() + fudgeX && x < c.getX() + cardWidth + fudgeX
 					&& y > c.getY() + fudgeY && y < c.getY() + cardHeight + fudgeY)
 			{
-				movedTranslationCard = true;
+				movedIncantationCard = true;
 				return c;
 			}
 		}
@@ -1176,6 +1196,7 @@ public class Onirim extends JFrame
 		}
 	}
 	
+
 	public void discardNightmare()
 	{
 		// send the last card played to limbo(must be a nightmare) to discard
@@ -1331,6 +1352,8 @@ public class Onirim extends JFrame
 		public void mouseEntered(MouseEvent mickey) {}
 		public void mouseExited(MouseEvent mickey) {}
 		
+
+		
 		public void mousePressed(MouseEvent mickey) 
 		{
 			if(titleScreen)
@@ -1395,15 +1418,15 @@ public class Onirim extends JFrame
 						shuffleLimbo();
 					}
 				}				
-				else if(TranslationInPlay && clickedDeck(mickey.getX(), mickey.getY()))
+				else if(IncantationInPlay && clickedDeck(mickey.getX(), mickey.getY()))
 				{
-					while(TranslationCards.size() > 0)
+					while(IncantationCards.size() > 0)
 					{
-						System.out.print("Translation");
-						deck.add(TranslationCards.remove(0));
-						System.out.print("Translation is deconstructing");
+						System.out.print("Incantation");
+						deck.add(IncantationCards.remove(0));
+						System.out.print("Incantation is deconstructing");
 					}
-					TranslationInPlay = false; 
+					IncantationInPlay = false; 
 				}
 				
 
@@ -1416,6 +1439,17 @@ public class Onirim extends JFrame
 					drawCard();
 				}
 
+				else if(IncantationInPlay && clickedDeck(mickey.getX(), mickey.getY()))//TODO Just put this in, hope it does'nt mess with anything
+				{
+					IncantationInPlay = false; //frees the deck
+					adjustIncantation();
+					while(IncantationCards.size() > 0)
+					{
+						deck.add(IncantationCards.remove(0));
+					}
+					shuffleDeck();
+					drawCard();
+				}
 				else if(clickedTrapDoor(mickey.getX(), mickey.getY())) // TODO
 				{
 					if(deck.size() < 5)
@@ -1475,7 +1509,7 @@ public class Onirim extends JFrame
 				}
 			}	
 		}
-		
+
 		public void mouseReleased(MouseEvent mickey) 
 		{
 			System.out.println("Mouse Released");
@@ -1509,7 +1543,7 @@ public class Onirim extends JFrame
 						setPlayedLocationCoordinates(c);
 					}
 					//DISCARD
-					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c)  && c.getType() != "DeadEnd" && !TranslationInPlay)//TODO
+					else if(!hasBeenPlayed && isDiscard(c) && !prophecyCards.contains(c)  && c.getType() != "DeadEnd" && !IncantationInPlay)//TODO
 					{
 						System.out.println("Discard");
 						sendToDiscard(c);
@@ -1521,21 +1555,38 @@ public class Onirim extends JFrame
 						{
 							if(c.getType().contains("Glyph"))
 							{
-								TranslationInPlay = true;
-								setTranslation(5);
+								IncantationInPlay = true;
+								setIncantation(5);
 							}
 						}
+					}					
+					else if(IncantationInPlay && (IncantationCards.size() == numIncantationCardsToDisplay))// || prophecyCards.size() == deck.size()))
+					{ 
+						if(isDiscard(c) && numIncantationCardsToDiscard == 1)
+						{
+							sendToDiscard(c);
+							IncantationInPlay = false; //frees the deck
+							lockProphecyAndSetProphecyOrder();
+							adjustProphecy();
+							adjustHand();//TODO
+							numProphecyCardsToDiscard = 0;
+							numProphecyCardsToDisplay = 0;
+						}
+						
+						else if(movedIncantationCard)
+						{
+							movedIncantationCard = false;
+							deltaDragX = 0; //released prophecy card.  reset deltaDragX to zero
+							adjustProphecy();
+							c.setY(startCardY);
+						}
+						else
+						{
+							c.setX(startCardX);
+							c.setY(startCardY);
+						}
 					}
-					else if(TranslationInPlay)
-					{
-							if( mickey.getX() > c.getX() + fudgeX && mickey.getX() < c.getX() + cardWidth + fudgeX
-									&& mickey.getY() > c.getY() + fudgeY && mickey.getY() < c.getY() + cardHeight + fudgeY
-										&&  c.getType().contains("door") )
-							{
-								scoreDoorFromGlyph(c);
-								TranslationInPlay = false; 
-							}
-					}
+
 					else if(prophecyInPlay && (prophecyCards.size() == numProphecyCardsToDisplay))// || prophecyCards.size() == deck.size()))
 					{ 
 						if(isDiscard(c) && numProphecyCardsToDiscard == 1)
@@ -1563,33 +1614,13 @@ public class Onirim extends JFrame
 						}
 					}
 				
-					
-					else if(TranslationInPlay && (TranslationCards.size() == numTranslationCardsToDisplay))// || prophecyCards.size() == deck.size()))
-					{ 
-						if(isDiscard(c) && numTranslationCardsToDiscard == 1)
-						{
-							sendToDiscard(c);
-							TranslationInPlay = false; //frees the deck
-							lockProphecyAndSetProphecyOrder();
-							adjustProphecy();
-							adjustHand();//TODO
-							numProphecyCardsToDiscard = 0;
-							numProphecyCardsToDisplay = 0;
-						}
-						
-						else if(movedTranslationCard)
-						{
-							movedTranslationCard = false;
-							deltaDragX = 0; //released prophecy card.  reset deltaDragX to zero
-							adjustProphecy();
-							c.setY(startCardY);
-						}
-						else
-						{
-							c.setX(startCardX);
-							c.setY(startCardY);
-						}
+										
+					else if(IncantationInPlay && IncanatationToDoor(c, mickey))//TODO
+					{
+						scoreDoorFromGlyph(c);
+						IncantationInPlay = false; 
 					}
+
 					
 					
 					else if(hasBeenPlayed)
@@ -1665,29 +1696,29 @@ public class Onirim extends JFrame
 						oldX = c.getX(); // updating delta after some computations
 					}
 					
-					if(TranslationCards.contains(c)) // move this out if dragged becomes more complex
+					if(IncantationCards.contains(c)) // move this out if dragged becomes more complex
 					{
 						deltaDragX = c.getX() - oldX;
 						
 						
-						for(int j = 0; j < Math.min(TranslationCards.size(), deck.size()); j++)
+						for(int j = 0; j < Math.min(IncantationCards.size(), deck.size()); j++)
 						{
-							Card temp = prophecyCards.get(j);
+							Card temp = IncantationCards.get(j);
 							if(!temp.equals(c) && deltaDragX < 0 && c.getX() < temp.getX() + cardWidth - 10 && c.getX() > temp.getX()) 
 							{
-								TranslationCards.remove(c);
-								TranslationCards.add(j, c);
-								TranslationCards.remove(temp);
-								TranslationCards.add(j+1,temp);
-								adjustTranslation(c);       
+								IncantationCards.remove(c);
+								IncantationCards.add(j, c);
+								IncantationCards.remove(temp);
+								IncantationCards.add(j+1,temp);
+								adjustIncantation(c);       
 							}
 							else if(!temp.equals(c) && deltaDragX > 0 && c.getX() + cardWidth > temp.getX() + 10 && c.getX()< temp.getX())
 							{
-								TranslationCards.remove(c);
-								TranslationCards.add(j, c);
-								TranslationCards.remove(temp);
-								TranslationCards.add(j-1,temp);
-								adjustTranslation(c);       
+								IncantationCards.remove(c);
+								IncantationCards.add(j, c);
+								IncantationCards.remove(temp);
+								IncantationCards.add(j-1,temp);
+								adjustIncantation(c);       
 							}
 						}
 						oldX = c.getX(); // updating delta after some computations
