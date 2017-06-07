@@ -585,6 +585,7 @@ public class Onirim extends JFrame
 	
 	public void drawCard()
 	{
+		System.out.println("playedDoors.size() = " + playedDoors.size());
 		if(deck.isEmpty())
 		{
 			gameOver = true;
@@ -646,6 +647,11 @@ public class Onirim extends JFrame
 		{
 			prophecyCards.remove(temp);
 			adjustProphecy();
+		}
+		if(IncantationCards.contains(temp))
+		{
+			IncantationCards.remove(temp);
+			adjustIncantation();
 		}
 	}
 	
@@ -917,10 +923,14 @@ public class Onirim extends JFrame
 	
 	public boolean OnDoors(Card c, MouseEvent mickey)//TODO Find out the coordinates to the Played doors stack
 	{
-		//			Min y coord : (10 + cardHeight)
-		//			Min x coord : drawMaxX
-		//			Max x coord : screenWidth - 2*fudgeX-10
-		if( mickey.getX() > drawMaxX && mickey.getX() < screenWidth - 2*fudgeX-10 && mickey.getY() < 10 + cardHeight && c.getType().contains("door") )
+		int x = mickey.getX();
+		int y = mickey.getY();
+		/*
+		 * x > c.getX() + fudgeX && x < c.getX() + cardWidth + fudgeX
+					&& y > c.getY() + fudgeY && y < c.getY() + cardHeight + fudgeY
+		 */
+		if( x > drawMaxX && mickey.getX() < screenWidth - 2*fudgeX-10 
+				&& y < 10 + cardHeight && c.getType().contains("door") )
 			return true;
 		return false;
 	}
