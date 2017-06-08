@@ -585,17 +585,15 @@ public class Onirim extends JFrame
 	
 	public void drawCard()
 	{
-		System.out.println("playedDoors.size() = " + playedDoors.size());
+		int Count = 0;
 		if(deck.isEmpty())
 		{
 			gameOver = true;
 			result = "YOU LOSE";
 			return;
 		}
-		
 		Card temp = deck.get(0);
 		doorFromKey = null;
-		
 		if(!playedLocations.isEmpty())
 		{
 			lockLastLocationPlay();
@@ -628,6 +626,7 @@ public class Onirim extends JFrame
 		 */
 		else if(temp.getType().contains("dream"))//TODO
 		{
+			Count++;
 			limbo.add(deck.remove(0));
 			if(!fillingHandSoIgnoreNightmares)
 			{
@@ -647,11 +646,6 @@ public class Onirim extends JFrame
 		{
 			prophecyCards.remove(temp);
 			adjustProphecy();
-		}
-		if(IncantationCards.contains(temp))
-		{
-			IncantationCards.remove(temp);
-			adjustIncantation();
 		}
 	}
 	
@@ -923,14 +917,10 @@ public class Onirim extends JFrame
 	
 	public boolean OnDoors(Card c, MouseEvent mickey)//TODO Find out the coordinates to the Played doors stack
 	{
-		int x = mickey.getX();
-		int y = mickey.getY();
-		/*
-		 * x > c.getX() + fudgeX && x < c.getX() + cardWidth + fudgeX
-					&& y > c.getY() + fudgeY && y < c.getY() + cardHeight + fudgeY
-		 */
-		if( x > drawMaxX && mickey.getX() < screenWidth - 2*fudgeX-10 
-				&& y < 10 + cardHeight && c.getType().contains("door") )
+		//			Min y coord : (10 + cardHeight)
+		//			Min x coord : drawMaxX
+		//			Max x coord : screenWidth - 2*fudgeX-10
+		if( mickey.getX() > drawMaxX && mickey.getX() < screenWidth - 2*fudgeX-10 && mickey.getY() < 10 + cardHeight && c.getType().contains("door") )
 			return true;
 		return false;
 	}
@@ -1004,11 +994,12 @@ public class Onirim extends JFrame
 	
 	public void scoreDoorFromGlyph(Card k)//TODO
 	{
-		IncantationCards.remove(k);
+		Card C = k;
+		C.equals(IncantationCards.remove(k));
 		emptyIncantation();
 		if(nextDoorIndex() == playedDoors.size())
 		{
-			playedDoors.add(k);
+			playedDoors.add(C);
 		}
 		gameOver = checkForWin();
 	}
@@ -1155,6 +1146,7 @@ public class Onirim extends JFrame
 	
 	public Card clickedIncantationCard(int x, int y)
 	{
+		System.out.println("clickedIncantationCard");
 		if(!IncantationInPlay)
 			return null;
 		
@@ -1430,6 +1422,8 @@ public class Onirim extends JFrame
 
 				else if(IncantationInPlay && clickedDeck(mickey.getX(), mickey.getY()))//TODO Just put this in, hope it does'nt mess with anything
 				{
+
+					System.out.println("IncantationInPlay && clickedDeck(mickey.getX(), mickey.getY())");
 					emptyIncantation();
 					IncantationInPlay = false; //frees the deck
 					shuffleDeck();
@@ -1491,6 +1485,7 @@ public class Onirim extends JFrame
 						IncantationCards.size() == numIncantationCardsToDisplay && 
 						clickedIncantationCard(mickey.getX(), mickey.getY())!=null) 
 				{
+					System.out.println("IncantationInPlay && /* (prophecyCards.size() == 5 || prophecyCards.size() == deck.size())*/ IncantationCards.size() == numIncantationCardsToDisplay && clickedIncantationCard(mickey.getX(), mickey.getY())!=null");
 					deltaDragX = clickedIncantationCard(mickey.getX(), mickey.getY()).getX(); // set DeltaDragX
 					oldX = deltaDragX;  // a copy
 				}
@@ -1611,7 +1606,7 @@ public class Onirim extends JFrame
 										
 					else if(IncantationInPlay && OnDoors(c, mickey))//TODO
 					{
-//						System.out.print("You attempt to play a door");
+						System.out.print("IncantationInPlay && OnDoors(c, mickey)");
 						scoreDoorFromGlyph(c);
 						IncantationInPlay = false; 
 					}
@@ -1693,6 +1688,7 @@ public class Onirim extends JFrame
 					
 					if(IncantationCards.contains(c)) // move this out if dragged becomes more complex
 					{
+						System.out.println("IncantationCards.containts(c)");
 						deltaDragX = c.getX() - oldX;
 						
 						
