@@ -160,7 +160,7 @@ public class Onirim extends JFrame
 		
 		if(Glyphs)
 		{
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 1; i++)
 			limbo.add(new Card(rd, "door", "red"));
 					
 			limbo.add(new Card(bd, "door", "blue"));
@@ -190,7 +190,7 @@ public class Onirim extends JFrame
 		 */
 		if(crossroadExpansion) //TODO
 		{
-			for(int i = 0; i < 0; i++)
+			for(int i = 0; i < 10; i++)
 				limbo.add(new Card(deadEnd, "DeadEnd", "DeadEnd"));
 			for(int i = 0; i < 10; i++)
 				limbo.add(new Card(xs, "locationSun", "all"));
@@ -344,8 +344,11 @@ public class Onirim extends JFrame
 				if(temp.getVisible())
 				{
 					if(playedDoors.contains(temp))  // scaleFactor = .8 for now
+					{
 						g.drawImage(toDraw.get(i).getImage(), toDraw.get(i).getX(), toDraw.get(i).getY(), 
 							(	int)(cardWidth*scaleFactor), (int)(cardHeight*scaleFactor), this);
+						temp.setMovable(false);
+					}
 					else
 						g.drawImage(toDraw.get(i).getImage(), toDraw.get(i).getX(), toDraw.get(i).getY(), 
 								cardWidth, cardHeight, this);
@@ -410,6 +413,15 @@ public class Onirim extends JFrame
 				for(Card c : hand)
 				{
 					if(c.getType().contains("Key") && (c.getColor().contains(doorFromKey.getColor()) || c.getColor().equals("all") == true))
+						g.fillRect(c.getX(), c.getY(), cardWidth, cardHeight);
+				}
+				g.setColor(Color.WHITE);
+			}
+			if(doorFromGlyph != null)
+			{
+				for(Card c : IncantationCards)
+				{
+					if(c.getType().contains("Door") && (c.getColor().contains(doorFromGlyph.getColor()) || c.getColor().equals("all") == true))
 						g.fillRect(c.getX(), c.getY(), cardWidth, cardHeight);
 				}
 				g.setColor(Color.WHITE);
@@ -944,7 +956,6 @@ public class Onirim extends JFrame
 	{
 //		System.out.println("scoreDoorFromSet");
 		emptyProphecy();
-		emptyIncantation();
 		doorFromSet.setVisible(true);
 		if(nextDoorIndex() == playedDoors.size())
 		{
@@ -994,14 +1005,22 @@ public class Onirim extends JFrame
 	
 	public void scoreDoorFromGlyph(Card k)//TODO
 	{
-		Card C = k;
-		C.equals(IncantationCards.remove(k));
+		k.setY(10);
+		k.setX((int)(30+(cardWidth*scaleFactor)*(nextDoorIndex()+1)));
+		IncantationCards.remove(k);		
+		deck.remove(k);
 		emptyIncantation();
 		if(nextDoorIndex() == playedDoors.size())
 		{
-			playedDoors.add(C);
+			playedDoors.add(k);
 		}
+		else
+		{
+			playedDoors.set(nextDoorIndex(), k);
+		}
+		toDraw.remove(k); // needed because we didn't move it, 
 		gameOver = checkForWin();
+		
 	}
 	
 	public void adjustDiscard(Card c)
@@ -1394,6 +1413,7 @@ public class Onirim extends JFrame
 					//must be the last card in limbo
 					else if(clickedNightmare(mickey.getX(), mickey.getY()))
 					{
+						System.out.println("Clicked Nightmare");
 						discardAndFillHand();
 						nightMareInPlay = false;
 					}
@@ -1404,6 +1424,7 @@ public class Onirim extends JFrame
 					}
 					else if(clickedDoorInPlay(mickey.getX(), mickey.getY()) != null)
 					{
+						System.out.println("Clicked Door In Play");
 						playDoorOnNightmare(clickedDoorInPlay(mickey.getX(), mickey.getY()));
 						nightMareInPlay = false;
 						shuffleLimbo();
@@ -1513,15 +1534,15 @@ public class Onirim extends JFrame
 //					System.out.println("c.getType() != DeadEnd = " + (c.getType() != "DeadEnd"));
 					c.setSelected(false);
 					
-					if(c.getType().contains("door"))//TODO
-					{
-						if(!nightMareInPlay && searchHandForCorrectKey(c))
-							doorFromGlyph = c;
-						limbo.add(deck.remove(0));
-						c.setX(drawMaxX + cardWidth*(limbo.size()-1) + 6*cardWidth);
-						c.setY(drawMinY);
-						c.setVisible(true);
-					}
+//					if(c.getType().contains("door"))//TODO
+//					{
+//						if(!nightMareInPlay && searchHandForCorrectKey(c))
+//							doorFromGlyph = c;
+//						limbo.add(deck.remove(0));
+//						c.setX(drawMaxX + cardWidth*(limbo.size()-1) + 6*cardWidth);
+//						c.setY(drawMinY);
+//						c.setVisible(true);
+//					}
 					
 					// didn't drop into play area so snap back to original position 
 					//PLAY LOCATION
@@ -1608,7 +1629,7 @@ public class Onirim extends JFrame
 					{
 						System.out.print("IncantationInPlay && OnDoors(c, mickey)");
 						scoreDoorFromGlyph(c);
-						IncantationInPlay = false; 
+						IncantationInPlay = false;
 					}
 
 					
