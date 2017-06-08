@@ -1632,7 +1632,13 @@ public class Onirim extends JFrame
 						IncantationInPlay = false;
 					}
 
-					
+					else if(movedIncantationCard && IncantationInPlay)
+					{
+						movedIncantationCard = false;
+						deltaDragX = 0; //released prophecy card.  reset deltaDragX to zero
+						adjustIncantation();
+						c.setY(startCardY);
+					}
 					
 					else if(hasBeenPlayed)
 					{
