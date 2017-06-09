@@ -141,23 +141,38 @@ public class Onirim extends JFrame
 	{
 		makeEnvironment();
 	}
+	public String printArray(ArrayList<Card> list)
+	{
+		{
+			String toRet= "";
+			Card c;
+			for(int i = 0; i < list.size(); i++)
+			{
+				c = list.get(i);
+				if(c != null)
+					toRet += c.getColor() + "_" + c.getType() + " :" + (i + 1) + "   ";
+				else
+					toRet += "NULL_ :" + (i + 1) + "   ";
+			}
+			toRet += "\n";
+			return toRet;
+		}
+	}
 	public void emptyIncantation()
 	{
-		deck.remove(0);
-		deck.remove(0);
-		deck.remove(0);
-		deck.remove(0);
-		deck.remove(0);
-
+		for(int i = 0; i < IncantationCards.size(); i++)
+		{
+			deck.remove(0);
+		}
+		System.out.println(printArray(deck));
 		for(Card c : IncantationCards)
 		{
 			c.setX(-200);
 			c.setY(0);
 			c.setVisible(false);
-			for(int i = 0; i < IncantationCards.size(); i++)
-				deck.add(deck.size()-1, c);
+			deck.add(deck.size(), c);
 		}
-
+		System.out.println(printArray(deck));
 		limbo.clear();
 		IncantationCards.clear();
 		prophecyCards.clear();
@@ -189,16 +204,16 @@ public class Onirim extends JFrame
 					
 			limbo.add(new Card(td, "door", "tan"));
 			//***********************************************************************************
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 2; i++)
 				limbo.add(new Card(rg, "locationGlyph", "red"));
 					
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 2; i++)
 				limbo.add(new Card(bg, "locationGlyph", "blue"));
 				
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 2; i++)
 				limbo.add(new Card(gg, "locationGlyph", "green"));
 					
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 2; i++)
 				limbo.add(new Card(tg, "locationGlyph", "tan"));
 		}
 		// if playing with the crossroads expansion
@@ -212,11 +227,11 @@ public class Onirim extends JFrame
 		{
 			for(int i = 0; i < 10; i++)
 				limbo.add(new Card(deadEnd, "DeadEnd", "DeadEnd"));
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 3; i++)
 				limbo.add(new Card(xs, "locationSun", "all"));
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 2; i++)
 				limbo.add(new Card(xm, "locationMoon", "all"));
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 1; i++)
 				limbo.add(new Card(xk, "locationKey", "all"));
 		}
 		
@@ -1467,7 +1482,6 @@ public class Onirim extends JFrame
 					System.out.println("IncantationInPlay && clickedDeck(mickey.getX(), mickey.getY())");
 					emptyIncantation();
 					IncantationInPlay = false; //frees the deck
-					shuffleDeck();
 					drawCard();
 				}
 				else if(clickedTrapDoor(mickey.getX(), mickey.getY())) // TODO
