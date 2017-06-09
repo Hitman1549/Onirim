@@ -141,7 +141,27 @@ public class Onirim extends JFrame
 	{
 		makeEnvironment();
 	}
-	
+	public void emptyIncantation()
+	{
+		deck.remove(0);
+		deck.remove(0);
+		deck.remove(0);
+		deck.remove(0);
+		deck.remove(0);
+
+		for(Card c : IncantationCards)
+		{
+			c.setX(-200);
+			c.setY(0);
+			c.setVisible(false);
+			for(int i = 0; i < IncantationCards.size(); i++)
+				deck.add(deck.size()-1, c);
+		}
+
+		limbo.clear();
+		IncantationCards.clear();
+		prophecyCards.clear();
+	}
 
 	public void populateCards()
 	{
@@ -529,16 +549,16 @@ public class Onirim extends JFrame
 		prophecyCards.clear();
 	}
 	
-	public void emptyIncantation()
-	{
-		for(Card c : IncantationCards)
-		{
-			c.setX(-200);
-			c.setY(0);
-			c.setVisible(false);
-		}
-		IncantationCards.clear();
-	}
+//	public void emptyIncantation()
+//	{
+//		for(Card c : IncantationCards)
+//		{
+//			c.setX(-200);
+//			c.setY(0);
+//			c.setVisible(false);
+//		}
+//		IncantationCards.clear();
+//	}
 	
 	public boolean clickedDeck(int x, int y)
 	{
@@ -1715,7 +1735,6 @@ public class Onirim extends JFrame
 					
 					if(IncantationCards.contains(c)) // move this out if dragged becomes more complex
 					{
-						System.out.println("IncantationCards.containts(c)");
 						deltaDragX = c.getX() - oldX;
 						
 						
