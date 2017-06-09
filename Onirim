@@ -398,15 +398,7 @@ public class Onirim extends JFrame
 				g.setColor(Color.RED);
 				g.fillRect(trapMinX,  trapMinY, trapMaxX - trapMinX, trapMaxY - trapMinY);
 			}
-			if(Glyphs)//TODO AHHHHHHHHHHHHHH
-			{
-//				trapMinX = screenWidth - 125;
-//				trapMinY = screenHeight - 240;
-//				trapMaxY = trapMinY + cardHeight;	
-//				trapMaxX = trapMinX + cardWidth;
-				g.setColor(Color.RED);
-				g.fillRect(screenWidth - 125,  screenHeight - 240, screenWidth - 125 + cardWidth - screenWidth - 125, screenHeight - 240 + cardHeight - screenHeight - 240);
-			}
+
 			g.drawImage(cardBack, 10, screenHeight - cardHeight -100, cardWidth, cardHeight, this);
 			g.setColor(Color.white);
 			g.drawString("DECK: " + deck.size() + "                                      HAND"
@@ -1407,15 +1399,15 @@ public class Onirim extends JFrame
 				int yChange = 10 + cardHeight;
 
 				if(mickey.getX() >= 20 + fudgeX && mickey.getX() <= 40 + fudgeX //TODO
-						&& mickey.getY() >= y1 + fudgeY + 2*cardHeight/2 /*+ yChange*/
-						&& mickey.getY() <= y1 + 20 + fudgeY + 2*cardHeight/2 /*+ yChange*/)
+						&& mickey.getY() >= y1 + fudgeY + yChange
+						&& mickey.getY() <= y1 + 20 + fudgeY + yChange)
 				{
 					Glyphs = !Glyphs;
 				}
 				
 				if(mickey.getX() >= 20 + fudgeX && mickey.getX() <= 40 + fudgeX 
-						&& mickey.getY() >= y1 + fudgeY /*+ yChange*/
-						&& mickey.getY() <= y1 + 20 + fudgeY /*+ yChange*/)
+						&& mickey.getY() >= y1 + fudgeY/* + yChange*/
+						&& mickey.getY() <= y1 + 20 + fudgeY/* + yChange*/)
 				{
 					crossroadExpansion = !crossroadExpansion;
 				}
